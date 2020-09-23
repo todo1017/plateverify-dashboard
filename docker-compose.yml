@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+
+  plateverify-app:
+    container_name: plateverify-app
+    image: cra
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "5003:3000"
+    volumes:
+      - '/app/node_modules'
+      - './:/app'

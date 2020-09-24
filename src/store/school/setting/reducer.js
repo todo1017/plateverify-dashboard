@@ -17,12 +17,14 @@ const initialState = {
 
 export default (state = initialState, action) => {
 
+  const { type, payload } = action;
+
   let baseState = {
     ...state,
-    action: action.type
+    action: type
   };
 
-  switch (action.type) {
+  switch (type) {
     case GET_REQUEST:
     case UPDATE_REQUEST:
       return baseState;

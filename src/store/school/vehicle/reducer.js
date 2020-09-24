@@ -32,12 +32,14 @@ const initialState = {
 
 export default (state = initialState, action) => {
 
+  const { type, payload } = action;
+
   let baseState = {
     ...state,
-    action: action.type
+    action: type
   };
 
-  switch (action.type) {
+  switch (type) {
     case LIST_REQUEST:
     case VIEW_REQUEST:
     case PARSE_REQUEST:

@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Menu, MenuItem, Button } from "@material-ui/core";
 
+const useEffectOnce = func => useEffect(func, []);
+
 const Header = ({ onChange, values }) => {
 
   const [value, setValue] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     setValue(values[0]);
-  }, [values]);
+  });
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);

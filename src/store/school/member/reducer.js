@@ -52,6 +52,10 @@ export default (state = initialState, action) => {
         group: payload.group? payload.group : state.group
       };
     case VIEW_REQUEST:
+      return {
+        ...baseState,
+        view: null
+      };
     case PARSE_REQUEST:
     case UPLOAD_REQUEST:
     case UPDATE_REQUEST:

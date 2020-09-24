@@ -77,7 +77,7 @@ const MemberView = () => {
   });
 
   useEffect(() => {
-    if (memberState.action === memberActions.VIEW_SUCCESS && !init) {
+    if (!init && memberState.view && memberState.view.id === id) {
       formik.values.group = memberState.view.group;
       formik.values.first_name = memberState.view.first_name;
       formik.values.last_name = memberState.view.last_name;
@@ -88,7 +88,7 @@ const MemberView = () => {
       formik.values.graduation = memberState.view.graduation;
       setInit(true);
     }
-  }, [formik, memberState, init]);
+  }, [memberState, formik, id, init]);
 
   return (
     <div className="app-wrapper">

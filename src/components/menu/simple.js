@@ -3,14 +3,14 @@ import { Menu, MenuItem, Button } from "@material-ui/core";
 
 const useEffectOnce = func => useEffect(func, []);
 
-const Header = ({ onChange, values }) => {
+const Header = ({ onChange, values, defaultValue }) => {
 
   const [value, setValue] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
 
   useEffectOnce(() => {
-    setValue(values[0]);
+    setValue(defaultValue || values[0]);
   });
 
   const handleMenuOpen = (event) => {

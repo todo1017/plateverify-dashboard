@@ -88,7 +88,7 @@ const MemberList = () => {
         </div>
         <Paper className={classes.root}>
           <div className={classes.filterTop}>
-            <SimpleMenu values={['all', 'student', 'faculty']} onChange={handleChangeGroup}/>
+            <SimpleMenu defaultValue={memberState.group} values={['all', 'student', 'faculty']} onChange={handleChangeGroup}/>
           </div>
           <TableContainer>
             <Table>

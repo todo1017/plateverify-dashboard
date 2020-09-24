@@ -10,6 +10,7 @@ const {
   PARSE_REQUEST,
   PARSE_SUCCESS,
   PARSE_FAILURE,
+  PARSE_CLEAR,
   UPLOAD_REQUEST,
   UPLOAD_SUCCESS,
   UPLOAD_FAILURE,
@@ -23,11 +24,16 @@ const {
 
 const initialState = {
   members: [],
-  pagination: {},
+  group: 'all',
+  pagination: {
+    currentPage: 1,
+    totalItems: 0
+  },
   view: null,
   parsed: null,
+  failed: [],
   action: null,
-  error: null
+  error: null,
 };
 
 export default (state = initialState, action) => {
@@ -41,6 +47,10 @@ export default (state = initialState, action) => {
 
   switch (type) {
     case LIST_REQUEST:
+      return {
+        ...baseState,
+        group: payload.group? payload.group : state.group
+      };
     case VIEW_REQUEST:
     case PARSE_REQUEST:
     case UPLOAD_REQUEST:
@@ -60,7 +70,7 @@ export default (state = initialState, action) => {
     case LIST_SUCCESS:
       return {
         ...baseState,
-        offenders: payload.offenders,
+        members: payload.members,
         pagination: payload.meta
       };
     case VIEW_SUCCESS:
@@ -73,11 +83,15 @@ export default (state = initialState, action) => {
         ...baseState,
         parsed: payload.parsed
       };
+    case PARSE_CLEAR:
+      return {
+        ...baseState,
+        parsed: null
+      };
     case UPLOAD_SUCCESS:
       return {
         ...baseState,
         failed: payload.failed,
-        parsed: null
       };
     case UPDATE_SUCCESS:
       return {

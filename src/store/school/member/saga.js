@@ -81,7 +81,7 @@ function* upload({ payload }) {
     yield put({
       type: UPLOAD_SUCCESS,
       payload: {
-        failed: response.data.failedRows
+        failed: response.data.failed
       }
     });
   } catch (error) {

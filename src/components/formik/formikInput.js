@@ -12,6 +12,7 @@ const FormikInput = ({ formik, name, ...props }) => {
 
   return (
     <TextField
+      size="small"
       name={name}
       error={formik.touched[name] && formik.errors[name] !== undefined}
       helperText={formik.touched[name] && formik.errors[name]}

@@ -1,41 +1,46 @@
-import React from 'react';
-import { Form, Select } from 'antd';
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { Select, MenuItem, FormControl, InputLabel, FormHelperText } from "@material-ui/core";
 
-const { Option } = Select;
+const useStyles = makeStyles({
+  label: {
+    background: 'white',
+    padding: '0 8px',
+    transition: 'none',
+    borderRadius: 2
+  },
+});
 
-export default ({ formik, name, label, options, index, value, actions, ...props }) => {
+const FormikSelect = ({ formik, name, label, options, ...props }) => {
 
-  const handleChange = (value) => {
-    if (actions) {
-      actions();
-    }
-    formik.setFieldValue(name, value);
+  const classes = useStyles();
+
+  const handleChange = event => {
+    formik.handleChange(event);
     if (!formik.touched[name]) {
       formik.touched[name] = true;
     }
   };
 
-  return (
-    <>
-      <div>{label}</div>
-      <Form.Item
-        hasFeedback={formik.values[name]}
-        validateStatus={(formik.touched[name] && formik.errors[name]) ? 'error' : 'success'}
-        help={(formik.touched[name] && formik.errors[name]) || ''}>
-        <Select
-          value={formik.values[name]}
-          onChange={handleChange}
-          style={{ width: '100%' }}
-          name={name}
-          {...props}>
-          {options.map((option, i) =>
-            <Option value={index? option[index] : option} key={i}>
-              {value? option[value] : option}
-            </Option>
-          )}
-        </Select>
-      </Form.Item>
-    </>
-  );
+  const isError = formik.touched[name] && formik.errors[name] !== undefined;
+  const helperText = formik.touched[name] && formik.errors[name];
 
+  return (
+    <FormControl variant="outlined" size="small" fullWidth error={isError} {...props}>
+      <InputLabel classes={{ root: classes.label, focused: classes.focus }}>{label}</InputLabel>
+      <Select
+        name={name}
+        value={formik.values[name]}
+        onChange={handleChange}>
+        {options.map(option =>
+          <MenuItem value={option} key={option}>{option}</MenuItem>
+        )}
+      </Select>
+      {isError &&
+        <FormHelperText>{helperText}</FormHelperText>
+      }
+    </FormControl>
+  );
 }
+
+export default FormikSelect;

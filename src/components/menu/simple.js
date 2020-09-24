@@ -28,7 +28,7 @@ const Header = ({ onChange, values }) => {
   return (
     <>
       <Button variant="outlined" onClick={handleMenuOpen}>
-        Range: {value}
+        {value}
       </Button>
       <Menu
         anchorEl={anchorEl}

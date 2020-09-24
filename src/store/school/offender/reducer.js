@@ -8,7 +8,10 @@ const {
 
 const initialState = {
   offenders: [],
-  pagination: {},
+  pagination: {
+    currentPage: 1,
+    totalItems: 0
+  },
   action: null,
   error: null
 };

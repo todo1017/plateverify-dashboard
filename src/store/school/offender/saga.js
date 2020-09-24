@@ -8,7 +8,7 @@ const {
   LIST_SUCCESS
 } = actions;
 
-function* offenderList({ payload }) {
+function* list({ payload }) {
   try {
     const response = yield call(api.post, '/offender/list', payload);
     yield put({
@@ -25,13 +25,13 @@ function* offenderList({ payload }) {
     });
   }
 }
-export function* watchOffenderList() {
-  yield takeEvery(LIST_REQUEST, offenderList)
+export function* watchList() {
+  yield takeEvery(LIST_REQUEST, list)
 }
 
 function* offenderSaga() {
   yield all([
-    fork(watchOffenderList),
+    fork(watchList),
   ]);
 }
 

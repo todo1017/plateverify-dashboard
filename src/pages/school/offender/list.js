@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Table,
@@ -10,6 +11,9 @@ import {
   TablePagination,
   Paper
 } from "@material-ui/core";
+import offenderActions from "store/school/offender/actions";
+
+const useEffectOnce = func => useEffect(func, []);
 
 const useStyles = makeStyles({
   head: {
@@ -19,11 +23,27 @@ const useStyles = makeStyles({
   },
 });
 
+
 const OffenderList = () => {
 
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const offenderState = useSelector(state => state.School.Offender);
 
-  const handleChangePage = () => {
+  useEffectOnce(() => {
+    if (offenderState.offenders.length === 0) {
+      dispatch(offenderActions.list({
+        page: 1,
+        limit: 10
+      }));
+    }
+  });
+
+  const handleChangePage = (e, page) => {
+    dispatch(offenderActions.list({
+      page: page + 1,
+      limit: 10
+    }));
   };
 
   return (
@@ -46,25 +66,27 @@ const OffenderList = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow>
-                  <TableCell>FDJ8941</TableCell>
-                  <TableCell>2</TableCell>
-                  <TableCell>andrew, albert</TableCell>
-                  <TableCell>9 Coyne Dr, Haverstraw, New York10927</TableCell>
-                  <TableCell>Honda</TableCell>
-                  <TableCell>Pilot</TableCell>
-                  <TableCell>Burgundy</TableCell>
-                  <TableCell>2011</TableCell>
-                  <TableCell>NY</TableCell>
-                </TableRow>
+                {offenderState.offenders.map(offender =>
+                  <TableRow key={offender.id}>
+                    <TableCell>{offender.plate}</TableCell>
+                    <TableCell>{offender.risk_level}</TableCell>
+                    <TableCell>{offender.name}</TableCell>
+                    <TableCell>{offender.address}</TableCell>
+                    <TableCell>{offender.vehicle_make}</TableCell>
+                    <TableCell>{offender.vehicle_model}</TableCell>
+                    <TableCell>{offender.vehicle_color}</TableCell>
+                    <TableCell>{offender.vehicle_year}</TableCell>
+                    <TableCell>{offender.vehicle_state}</TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
             <TablePagination
               component="div"
-              count={100}
+              count={offenderState.pagination.totalItems}
               rowsPerPage={10}
               rowsPerPageOptions={[10]}
-              page={6}
+              page={offenderState.pagination.currentPage-1}
               onChangePage={handleChangePage}
             />
           </TableContainer>

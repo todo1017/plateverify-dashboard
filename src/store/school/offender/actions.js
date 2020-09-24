@@ -8,7 +8,7 @@ let actions = {
 
 actions = {
   ...actions,
-  offenderList: createAction(actions.LIST_REQUEST),
+  list: createAction(actions.LIST_REQUEST),
 };
 
 export default actions;

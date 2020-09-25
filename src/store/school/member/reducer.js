@@ -100,12 +100,12 @@ export default (state = initialState, action) => {
     case UPDATE_SUCCESS:
       return {
         ...baseState,
-        member: payload.member,
+        view: payload.view,
       };
     case REMOVE_SUCCESS:
       return {
         ...baseState,
-        member: null,
+        view: null,
       };
     default:
       return state;

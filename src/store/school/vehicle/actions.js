@@ -1,15 +1,16 @@
 import { createAction } from "redux-actions";
 
 let actions = {
-  LIST_REQUEST : 'SCHOOL/VEHICLE/LIST_REQUEST',
-  LIST_SUCCESS : 'SCHOOL/VEHICLE/LIST_SUCCESS',
-  LIST_FAILURE : 'SCHOOL/VEHICLE/LIST_FAILURE',
-  VIEW_REQUEST : 'SCHOOL/VEHICLE/VIEW_REQUEST',
-  VIEW_SUCCESS : 'SCHOOL/VEHICLE/VIEW_SUCCESS',
-  VIEW_FAILURE : 'SCHOOL/VEHICLE/VIEW_FAILURE',
-  PARSE_REQUEST : 'SCHOOL/VEHICLE/PARSE_REQUEST',
-  PARSE_SUCCESS : 'SCHOOL/VEHICLE/PARSE_SUCCESS',
-  PARSE_FAILURE : 'SCHOOL/VEHICLE/PARSE_FAILURE',
+  LIST_REQUEST   : 'SCHOOL/VEHICLE/LIST_REQUEST',
+  LIST_SUCCESS   : 'SCHOOL/VEHICLE/LIST_SUCCESS',
+  LIST_FAILURE   : 'SCHOOL/VEHICLE/LIST_FAILURE',
+  VIEW_REQUEST   : 'SCHOOL/VEHICLE/VIEW_REQUEST',
+  VIEW_SUCCESS   : 'SCHOOL/VEHICLE/VIEW_SUCCESS',
+  VIEW_FAILURE   : 'SCHOOL/VEHICLE/VIEW_FAILURE',
+  PARSE_REQUEST  : 'SCHOOL/VEHICLE/PARSE_REQUEST',
+  PARSE_SUCCESS  : 'SCHOOL/VEHICLE/PARSE_SUCCESS',
+  PARSE_FAILURE  : 'SCHOOL/VEHICLE/PARSE_FAILURE',
+  PARSE_CLEAR    : 'SCHOOL/MEMBER/PARSE_CLEAR',
   UPLOAD_REQUEST : 'SCHOOL/VEHICLE/UPLOAD_REQUEST',
   UPLOAD_SUCCESS : 'SCHOOL/VEHICLE/UPLOAD_SUCCESS',
   UPLOAD_FAILURE : 'SCHOOL/VEHICLE/UPLOAD_FAILURE',
@@ -23,12 +24,13 @@ let actions = {
 
 actions = {
   ...actions,
-  list: createAction(actions.LIST_REQUEST),
-  view: createAction(actions.VIEW_REQUEST),
-  parse: createAction(actions.PARSE_REQUEST),
-  upload: createAction(actions.UPLOAD_REQUEST),
-  update: createAction(actions.UPDATE_REQUEST),
-  remove: createAction(actions.REMOVE_REQUEST),
+  list       : createAction(actions.LIST_REQUEST),
+  view       : createAction(actions.VIEW_REQUEST),
+  parse      : createAction(actions.PARSE_REQUEST),
+  parseClear : createAction(actions.PARSE_CLEAR),
+  upload     : createAction(actions.UPLOAD_REQUEST),
+  update     : createAction(actions.UPDATE_REQUEST),
+  remove     : createAction(actions.REMOVE_REQUEST),
 };
 
 export default actions;

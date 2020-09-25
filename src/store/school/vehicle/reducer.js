@@ -10,6 +10,7 @@ const {
   PARSE_REQUEST,
   PARSE_SUCCESS,
   PARSE_FAILURE,
+  PARSE_CLEAR,
   UPLOAD_REQUEST,
   UPLOAD_SUCCESS,
   UPLOAD_FAILURE,
@@ -23,9 +24,13 @@ const {
 
 const initialState = {
   vehicles: [],
-  pagination: {},
+  pagination: {
+    currentPage: 1,
+    totalItems: 0
+  },
   view: null,
   parsed: null,
+  failed: [],
   action: null,
   error: null
 };
@@ -40,8 +45,12 @@ export default (state = initialState, action) => {
   };
 
   switch (type) {
-    case LIST_REQUEST:
     case VIEW_REQUEST:
+      return {
+        ...baseState,
+        view: null
+      };
+    case LIST_REQUEST:
     case PARSE_REQUEST:
     case UPLOAD_REQUEST:
     case UPDATE_REQUEST:
@@ -73,11 +82,15 @@ export default (state = initialState, action) => {
         ...baseState,
         parsed: payload.parsed
       };
+    case PARSE_CLEAR:
+      return {
+        ...baseState,
+        parsed: null
+      };
     case UPLOAD_SUCCESS:
       return {
         ...baseState,
         failed: payload.failed,
-        parsed: null
       };
     case UPDATE_SUCCESS:
       return {

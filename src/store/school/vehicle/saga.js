@@ -81,7 +81,7 @@ function* upload({ payload }) {
     yield put({
       type: UPLOAD_SUCCESS,
       payload: {
-        failed: response.data.failedRows
+        failed: response.data.failed
       }
     });
   } catch (error) {
@@ -98,7 +98,7 @@ function* update({ payload }) {
     yield put({
       type: UPDATE_SUCCESS,
       payload: {
-        vehicle: response.data,
+        view: response.data,
       }
     });
   } catch (error) {
@@ -147,7 +147,7 @@ export function* watchRemove() {
   yield takeEvery(REMOVE_REQUEST, remove)
 }
 
-function* memberSaga() {
+function* vehicleSaga() {
   yield all([
     fork(watchList),
     fork(watchView),
@@ -158,4 +158,4 @@ function* memberSaga() {
   ]);
 }
 
-export default memberSaga;
+export default vehicleSaga;

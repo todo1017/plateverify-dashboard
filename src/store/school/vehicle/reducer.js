@@ -20,6 +20,10 @@ const {
   REMOVE_REQUEST,
   REMOVE_SUCCESS,
   REMOVE_FAILURE,
+  FLAG_REQUEST,
+  FLAG_SUCCESS,
+  FLAG_FAILURE,
+  FLAG_COMPLETE,
 } = actions;
 
 const initialState = {
@@ -55,6 +59,9 @@ export default (state = initialState, action) => {
     case UPLOAD_REQUEST:
     case UPDATE_REQUEST:
     case REMOVE_REQUEST:
+    case FLAG_REQUEST:
+    case FLAG_SUCCESS:
+    case FLAG_COMPLETE:
       return baseState;
     case LIST_FAILURE:
     case VIEW_FAILURE:
@@ -62,6 +69,7 @@ export default (state = initialState, action) => {
     case UPLOAD_FAILURE:
     case UPDATE_FAILURE:
     case REMOVE_FAILURE:
+    case FLAG_FAILURE:
       return {
         ...baseState,
         error: payload.error

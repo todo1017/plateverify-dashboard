@@ -1,8 +1,8 @@
 import slugify from "slugify";
 
 import Login from 'pages/auth/login';
-import SchoolDashboard     from 'pages/school/dashboard/dashboard';
-import SchoolRecordView    from 'pages/school/record/view';
+import SchoolDashboard     from 'pages/school/dashboard/home/home';
+import SchoolDashboardView from 'pages/school/dashboard/view/view';
 import SchoolAlertList     from 'pages/school/alert/list';
 import SchoolAlertView     from 'pages/school/alert/view';
 import SchoolOffenderList  from 'pages/school/offender/list';
@@ -27,10 +27,10 @@ const routeGenerator = (prefix) => [
     component: SchoolDashboard
   },
   {
-    path: `/${prefix}/record/:id`,
+    path: `/${prefix}/dashboard/:id`,
     roles: ['ROLE_SCOPE_SCHOOL'],
-    pageTitle: 'Record Detail',
-    component: SchoolRecordView
+    pageTitle: 'Vehicle Detail',
+    component: SchoolDashboardView
   },
   {
     path: `/${prefix}/alert`,

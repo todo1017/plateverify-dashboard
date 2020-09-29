@@ -20,6 +20,10 @@ let actions = {
   REMOVE_REQUEST : 'SCHOOL/VEHICLE/REMOVE_REQUEST',
   REMOVE_SUCCESS : 'SCHOOL/VEHICLE/REMOVE_SUCCESS',
   REMOVE_FAILURE : 'SCHOOL/VEHICLE/REMOVE_FAILURE',
+  FLAG_REQUEST   : 'SCHOOL/VEHICLE/FLAG_REQUEST',
+  FLAG_SUCCESS   : 'SCHOOL/VEHICLE/FLAG_SUCCESS',
+  FLAG_FAILURE   : 'SCHOOL/VEHICLE/FLAG_FAILURE',
+  FLAG_COMPLETE  : 'SCHOOL/VEHICLE/FLAG_COMPLETE',
 };
 
 actions = {
@@ -31,6 +35,7 @@ actions = {
   upload     : createAction(actions.UPLOAD_REQUEST),
   update     : createAction(actions.UPDATE_REQUEST),
   remove     : createAction(actions.REMOVE_REQUEST),
+  flag       : createAction(actions.FLAG_REQUEST),
 };
 
 export default actions;

@@ -21,6 +21,10 @@ const {
   REMOVE_REQUEST,
   REMOVE_SUCCESS,
   REMOVE_FAILURE,
+  FLAG_REQUEST,
+  FLAG_SUCCESS,
+  FLAG_FAILURE,
+  FLAG_COMPLETE
 } = actions;
 
 function* list({ payload }) {
@@ -123,6 +127,20 @@ function* remove({ payload }) {
   }
 }
 
+function* flag({ payload }) {
+  try {
+    yield call(api.post, '/vehicle/flag', payload);
+    yield put({ type: FLAG_SUCCESS });
+    yield put({ type: FLAG_COMPLETE });
+  } catch (error) {
+    yield put({
+      type: FLAG_FAILURE,
+      payload: { error }
+    });
+    yield put({ type: FLAG_COMPLETE });
+  }
+}
+
 export function* watchList() {
   yield takeEvery(LIST_REQUEST, list)
 }
@@ -147,6 +165,10 @@ export function* watchRemove() {
   yield takeEvery(REMOVE_REQUEST, remove)
 }
 
+export function* watchFlag() {
+  yield takeEvery(FLAG_REQUEST, flag)
+}
+
 function* vehicleSaga() {
   yield all([
     fork(watchList),
@@ -155,6 +177,7 @@ function* vehicleSaga() {
     fork(watchUpload),
     fork(watchUpdate),
     fork(watchRemove),
+    fork(watchFlag),
   ]);
 }
 

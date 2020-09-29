@@ -3,8 +3,8 @@ import slugify from "slugify";
 import Login from 'pages/auth/login';
 import SchoolDashboard     from 'pages/school/dashboard/home/home';
 import SchoolDashboardView from 'pages/school/dashboard/view/view';
-import SchoolAlertList     from 'pages/school/alert/list';
-import SchoolAlertView     from 'pages/school/alert/view';
+import SchoolAlertList     from 'pages/school/alert/list/list';
+import SchoolAlertView     from 'pages/school/alert/view/view';
 import SchoolOffenderList  from 'pages/school/offender/list';
 import SchoolMemberList    from 'pages/school/member/list';
 import SchoolMemberView    from 'pages/school/member/view';
@@ -39,7 +39,7 @@ const routeGenerator = (prefix) => [
     component: SchoolAlertList
   },
   {
-    path: `/${prefix}/alert/view/:id`,
+    path: `/${prefix}/alert/:id`,
     roles: ['ROLE_SCOPE_SCHOOL', 'ROLE_MANAGE_ALL'],
     pageTitle: 'Alerts',
     component: SchoolAlertView

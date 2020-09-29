@@ -4,6 +4,7 @@ import memberSagas from './member/saga';
 import vehicleSagas from './vehicle/saga';
 import settingSagas from './setting/saga';
 import recordSagas from './record/saga';
+import alertSagas from './alert/saga';
 
 export default function* rootSaga(getState) {
   yield all([
@@ -12,5 +13,6 @@ export default function* rootSaga(getState) {
     vehicleSagas(),
     settingSagas(),
     recordSagas(),
+    alertSagas(),
   ]);
 }

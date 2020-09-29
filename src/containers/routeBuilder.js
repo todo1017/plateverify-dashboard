@@ -10,7 +10,7 @@ import SchoolMemberList    from 'pages/school/member/list';
 import SchoolMemberView    from 'pages/school/member/view';
 import SchoolMemberImport  from 'pages/school/member/import';
 import SchoolVehicleList   from 'pages/school/vehicle/list';
-import SchoolVehicleView   from 'pages/school/vehicle/view';
+import SchoolVehicleView   from 'pages/school/vehicle/view/view';
 import SchoolVehicleImport from 'pages/school/vehicle/import';
 import SchoolSetting       from 'pages/school/setting/setting';
 

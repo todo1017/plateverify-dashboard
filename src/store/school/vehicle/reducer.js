@@ -50,10 +50,6 @@ export default (state = initialState, action) => {
 
   switch (type) {
     case VIEW_REQUEST:
-      return {
-        ...baseState,
-        view: null
-      };
     case LIST_REQUEST:
     case PARSE_REQUEST:
     case UPLOAD_REQUEST:

@@ -53,13 +53,9 @@ const ConnectVehicle = ({ member }) => {
   }, [member]);
 
   useEffect(() => {
-    if (form) {
-      // const exists = member.vehicles.map(vehicle => vehicle.id);
-      // const vehicles = memberState.vehicles.filter(v => !exists.includes(v.id)).map(vehicle => ({...vehicle, check: false}))
-      const vehicles = memberState.vehicles.map(vehicle => ({...vehicle, check: false}))
-      setNewVehicles(vehicles);
-    }
-  }, [member, memberState, form]);
+    const vehicles = memberState.vehicles.map(vehicle => ({...vehicle, check: false}))
+    setNewVehicles(vehicles);
+  }, [member, memberState]);
 
   const handleFind = () => {
     dispatch(memberActions.find({ keyword }));
@@ -101,9 +97,15 @@ const ConnectVehicle = ({ member }) => {
     }));
   };
 
+  const openForm = () => {
+    setForm(true);
+    setKeyword('');
+    setNewVehicles([]);
+  }
+
   return (
     <>
-      <span className={classes.root} onClick={() => setForm(true)}>
+      <span className={classes.root} onClick={openForm}>
         Connect Vehicle
       </span>
       <Modal

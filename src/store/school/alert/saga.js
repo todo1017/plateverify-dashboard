@@ -9,6 +9,10 @@ const {
   VIEW_REQUEST,
   VIEW_SUCCESS,
   VIEW_FAILURE,
+  CHECK_REQUEST,
+  CHECK_SUCCESS,
+  CHECK_FAILURE,
+  CHECK_COMPLETE
 } = actions;
 
 function* search({ payload }) {
@@ -47,6 +51,27 @@ function* view({ payload }) {
   }
 }
 
+function* check({ payload }) {
+  try {
+    yield call(api.post, '/alert/check', payload);
+    const response = yield call(api.post, '/alert/view', payload);
+    yield put({
+      type: VIEW_SUCCESS,
+      payload: {
+        view: response.data,
+      }
+    });
+    yield put({ type: CHECK_SUCCESS });
+    yield put({ type: CHECK_COMPLETE });
+  } catch (error) {
+    yield put({
+      type: CHECK_FAILURE,
+      payload: { error }
+    });
+    yield put({ type: CHECK_COMPLETE });
+  }
+}
+
 export function* watchSearch() {
   yield takeEvery(SEARCH_REQUEST, search)
 }
@@ -55,10 +80,15 @@ export function* watchView() {
   yield takeEvery(VIEW_REQUEST, view)
 }
 
+export function* watchCheck() {
+  yield takeEvery(CHECK_REQUEST, check)
+}
+
 function* memberSaga() {
   yield all([
     fork(watchSearch),
     fork(watchView),
+    fork(watchCheck),
   ]);
 }
 

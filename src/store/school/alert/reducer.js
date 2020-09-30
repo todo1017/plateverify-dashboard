@@ -8,6 +8,10 @@ const {
   VIEW_REQUEST,
   VIEW_SUCCESS,
   VIEW_FAILURE,
+  CHECK_REQUEST,
+  CHECK_SUCCESS,
+  CHECK_FAILURE,
+  CHECK_COMPLETE
 } = actions;
 
 const initialState = {
@@ -37,14 +41,14 @@ export default (state = initialState, action) => {
 
   switch (type) {
     case SEARCH_REQUEST:
-      return baseState;
     case VIEW_REQUEST:
-      return {
-        ...baseState,
-        view: null
-      };
+    case CHECK_REQUEST:
+    case CHECK_SUCCESS:
+    case CHECK_COMPLETE:
+      return baseState;
     case SEARCH_FAILURE:
     case VIEW_FAILURE:
+    case CHECK_FAILURE:
       return {
         ...baseState,
         error: payload.error

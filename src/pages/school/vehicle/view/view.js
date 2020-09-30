@@ -10,6 +10,7 @@ import vehicleActions from "store/school/vehicle/actions";
 import Plate from "./plate";
 import Visit from "./visit";
 import Flag from "./flag";
+import VehicleMember from "./member";
 
 const useStyles = makeStyles({
   actionTop: {
@@ -58,6 +59,7 @@ const VehicleView = () => {
             <Plate vehicle={vehicleState.view} />
             <Visit records={vehicleState.view.records} />
             <Flag vehicle={vehicleState.view} />
+            <VehicleMember member={vehicleState.view.member} />
           </>
         }
 

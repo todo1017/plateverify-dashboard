@@ -89,7 +89,7 @@ const VehicleList = () => {
                     <TableCell>{vehicle.plate}</TableCell>
                     <TableCell>{vehicle.make}</TableCell>
                     <TableCell>{vehicle.model}</TableCell>
-                    <TableCell>{vehicle.type}</TableCell>
+                    <TableCell>{vehicle.body}</TableCell>
                     <TableCell>{vehicle.color}</TableCell>
                     <TableCell width={50}>
                       <PrivateLink roles={['ROLE_MANAGE_ALL']} to={`/vehicle/view/${vehicle.id}`}>

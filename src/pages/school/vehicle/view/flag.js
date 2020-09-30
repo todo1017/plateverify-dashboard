@@ -99,7 +99,7 @@ export default function Flag({ vehicle }) {
                   {vehicle.flags.map((flag, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row">
-                        {moment(flag.start).format('MM/DD/YY')} - {flag.end && moment(flag.end).format('MM/DD/YY')}
+                        {flag.start} - {flag.end || ''}
                       </TableCell>
                       <TableCell>{flag.expire}</TableCell>
                       <TableCell>{flag.reason}</TableCell>

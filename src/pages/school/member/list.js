@@ -109,7 +109,11 @@ const MemberList = () => {
                     <TableCell>{member.group}</TableCell>
                     <TableCell>{member.email}</TableCell>
                     <TableCell>{member.phone}</TableCell>
-                    <TableCell></TableCell>
+                    <TableCell>
+                      {member.vehicles.map(vehicle =>
+                        <div className="text-uppercase" key={vehicle.id}>{vehicle.plate}</div>
+                      )}
+                    </TableCell>
                     <TableCell width={50}>
                       <PrivateLink roles={['ROLE_MANAGE_ALL']} to={`/member/view/${member.id}`}>
                         <Button variant="outlined" >

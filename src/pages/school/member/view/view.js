@@ -139,6 +139,22 @@ const MemberView = () => {
                 </div>
               </AccordionDetails>
             </Accordion>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <div className={classes.head}>
+                  Vehicles
+                </div>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div className={classes.space}>
+                  {memberState.view.vehicles.map(vehicle =>
+                    <PrivateLink roles={[]} to={`/vehicle/view/${vehicle.id}`} key={vehicle.id}>
+                      <div className="text-uppercase">{vehicle.plate}</div>
+                    </PrivateLink>
+                  )}
+                </div>
+              </AccordionDetails>
+            </Accordion>
           </>
         }
 

@@ -47,11 +47,9 @@ const Dashboard = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const recordState = useSelector(state => state.School.Record);
-  const [startDate, setStartDate] = useState(moment().startOf('day'));
-  const [endDate, setEndDate] = useState(moment().add(1, 'day').startOf('day'));
-  const [oldStartDate, setOldStartDate] = useState(moment().startOf('day'));
-  const [oldEndDate, setOldEndDate] = useState(moment().add(1, 'day').startOf('day'));
-  const [isChanged, setIsChanged] = useState(false);
+  const [startDate, setStartDate] = useState(moment());
+  const [endDate, setEndDate] = useState(moment());
+  const [filterChanged, setFilterChanged] = useState(false);
   const pageCount = Math.ceil(recordState.pagination.totalItems / 10);
 
   useEffectOnce(() => {
@@ -59,42 +57,38 @@ const Dashboard = () => {
       dispatch(recordActions.search({
         page: 1,
         limit: 10,
-        startDate: oldStartDate.format('YYYY-MM-DD 00:00:00'),
-        endDate: oldEndDate.format('YYYY-MM-DD 00:00:00')
+        startDate: recordState.filter.startDate,
+        endDate: recordState.filter.endDate
       }));
     }
+    setStartDate(recordState.filter.startDate);
+    setEndDate(recordState.filter.endDate);
   });
 
   useEffect(() => {
-    const newDates = startDate.format('YYYY-MM-DD hh:mm:ss') + endDate.format('YYYY-MM-DD hh:mm:ss');
-    const oldDates = oldStartDate.format('YYYY-MM-DD hh:mm:ss') + oldEndDate.format('YYYY-MM-DD hh:mm:ss');
-    if (newDates === oldDates) {
-      setIsChanged(false);
-    } else {
-      setIsChanged(true);
-    }
-  }, [startDate, endDate, oldStartDate, oldEndDate]);
-
-  const updateDate = () => {
-    dispatch(recordActions.search({
-      page: 1,
-      limit: 10,
-      startDate: startDate.format('YYYY-MM-DD 00:00:00'),
-      endDate: endDate.format('YYYY-MM-DD 00:00:00')
-    }));
-    setOldStartDate(startDate);
-    setOldEndDate(endDate);
-  };
+    let {startDate: startDate_, endDate: endDate_ } = recordState.filter;
+    let newStr = startDate.format('YYYYMMDDhhmmss') + endDate.format('YYYYMMDDhhmmss');
+    let oldStr = startDate_.format('YYYYMMDDhhmmss') + endDate_.format('YYYYMMDDhhmmss');
+    setFilterChanged(newStr !== oldStr);
+  }, [startDate, endDate, recordState.filter]);
 
   const handlePagination = (e, page) => {
-    console.log(page);
     dispatch(recordActions.search({
       page,
       limit: 10,
-      startDate: oldStartDate.format('YYYY-MM-DD 00:00:00'),
-      endDate: oldEndDate.format('YYYY-MM-DD 00:00:00')
+      startDate: recordState.filter.startDate,
+      endDate: recordState.filter.endDate,
     }));
   }
+
+  const applyFilter = () => {
+    dispatch(recordActions.search({
+      page: 1,
+      limit: 10,
+      startDate,
+      endDate
+    }));
+  };
 
   return (
     <div className="app-wrapper">
@@ -146,8 +140,8 @@ const Dashboard = () => {
                 value={endDate}
                 onChange={setEndDate} />
             </MuiPickersUtilsProvider>
-            {isChanged &&
-              <Button variant="contained" color="secondary" onClick={updateDate}>
+            {filterChanged &&
+              <Button variant="contained" color="secondary" onClick={applyFilter}>
                 Apply
               </Button>
             }
@@ -160,6 +154,9 @@ const Dashboard = () => {
             onChange={handlePagination} />
 
           <Paper className={classes.streamItem}>
+            {recordState.records.length === 0 &&
+              <div className="p-4 text-center flex-fill">NO RESULT</div>
+            }
             {recordState.records.map(record =>
               <StreamItem record={record} key={record.id} />
             )}

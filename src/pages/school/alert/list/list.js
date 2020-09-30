@@ -65,10 +65,10 @@ const Dashboard = () => {
         endDate: alertState.filter.endDate,
         status: alertState.filter.status
       }));
-      setStatus(alertState.filter.status);
-      setStartDate(alertState.filter.startDate);
-      setEndDate(alertState.filter.endDate);
     }
+    setStatus(alertState.filter.status);
+    setStartDate(alertState.filter.startDate);
+    setEndDate(alertState.filter.endDate);
   });
 
   useEffect(() => {

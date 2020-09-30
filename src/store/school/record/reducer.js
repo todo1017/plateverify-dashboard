@@ -1,3 +1,4 @@
+import moment from "moment";
 import actions from './actions';
 
 const {
@@ -11,6 +12,10 @@ const {
 
 const initialState = {
   records: [],
+  filter: {
+    startDate: moment().startOf('day'),
+    endDate: moment().add(1, 'day').startOf('day')
+  },
   pagination: {
     currentPage: 1,
     totalItems: 0
@@ -47,7 +52,8 @@ export default (state = initialState, action) => {
       return {
         ...baseState,
         records: payload.records,
-        pagination: payload.meta
+        pagination: payload.meta,
+        filter: payload.filter
       };
     case VIEW_SUCCESS:
       return {

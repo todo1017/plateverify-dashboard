@@ -18,7 +18,8 @@ function* search({ payload }) {
       type: SEARCH_SUCCESS,
       payload: {
         records: response.data.items,
-        meta: response.data.meta
+        meta: response.data.meta,
+        filter: payload
       }
     });
   } catch (error) {

@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { Paper, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from '@material-ui/lab/Alert';
-import DashboardIcon from '@material-ui/icons/Dashboard';
+import NotificationsIcon from '@material-ui/icons/Notifications';
 import * as moment from "moment";
 import PrivateLink from "components/link/private";
 import alertActions from "store/school/alert/actions";
@@ -117,12 +117,12 @@ const AlertView = () => {
               Checked
             </Button>
           }
-          <PrivateLink roles={[]} to="/dashboard">
+          <PrivateLink roles={[]} to="/alert">
             <Button
               color="primary"
               variant="contained"
-              startIcon={<DashboardIcon />}>
-              Dashboard
+              startIcon={<NotificationsIcon />}>
+              Alert List
             </Button>
           </PrivateLink>
         </div>

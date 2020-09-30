@@ -11,7 +11,6 @@ const {
   CHECK_REQUEST,
   CHECK_SUCCESS,
   CHECK_FAILURE,
-  CHECK_COMPLETE
 } = actions;
 
 const initialState = {
@@ -39,12 +38,12 @@ export default (state = initialState, action) => {
     action: type
   };
 
+  let alerts;
+
   switch (type) {
     case SEARCH_REQUEST:
     case VIEW_REQUEST:
     case CHECK_REQUEST:
-    case CHECK_SUCCESS:
-    case CHECK_COMPLETE:
       return baseState;
     case SEARCH_FAILURE:
     case VIEW_FAILURE:
@@ -64,6 +63,14 @@ export default (state = initialState, action) => {
       return {
         ...baseState,
         view: payload.view,
+      };
+    case CHECK_SUCCESS:
+      if (state.alerts.length) {
+        alerts = state.alerts.filter(alert => alert.id !== payload.id)
+      }
+      return {
+        ...baseState,
+        alerts
       };
     default:
       return state;

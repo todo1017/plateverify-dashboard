@@ -12,7 +12,6 @@ const {
   CHECK_REQUEST,
   CHECK_SUCCESS,
   CHECK_FAILURE,
-  CHECK_COMPLETE
 } = actions;
 
 function* search({ payload }) {
@@ -61,14 +60,17 @@ function* check({ payload }) {
         view: response.data,
       }
     });
-    yield put({ type: CHECK_SUCCESS });
-    yield put({ type: CHECK_COMPLETE });
+    yield put({
+      type: CHECK_SUCCESS,
+      payload: {
+        id: payload.id
+      }
+    });
   } catch (error) {
     yield put({
       type: CHECK_FAILURE,
       payload: { error }
     });
-    yield put({ type: CHECK_COMPLETE });
   }
 }
 

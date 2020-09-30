@@ -68,7 +68,11 @@ const OffenderList = () => {
               <TableBody>
                 {offenderState.offenders.map(offender =>
                   <TableRow key={offender.id}>
-                    <TableCell>{offender.plate}</TableCell>
+                    <TableCell>
+                      <span className="text-uppercase">
+                        {offender.plate}
+                      </span>
+                    </TableCell>
                     <TableCell>{offender.risk_level}</TableCell>
                     <TableCell>{offender.name}</TableCell>
                     <TableCell>{offender.address}</TableCell>

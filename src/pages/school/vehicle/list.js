@@ -86,7 +86,11 @@ const VehicleList = () => {
               <TableBody>
                 {vehicleState.vehicles.map(vehicle =>
                   <TableRow key={vehicle.id}>
-                    <TableCell>{vehicle.plate}</TableCell>
+                    <TableCell>
+                      <span className="text-uppercase">
+                        {vehicle.plate}
+                      </span>
+                    </TableCell>
                     <TableCell>{vehicle.make}</TableCell>
                     <TableCell>{vehicle.model}</TableCell>
                     <TableCell>{vehicle.body}</TableCell>

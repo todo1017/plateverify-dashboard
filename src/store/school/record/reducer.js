@@ -11,6 +11,12 @@ const {
 } = actions;
 
 const initialState = {
+  stats: {
+    total: 0,
+    student: 0,
+    faculty: 0,
+    unknown: 0
+  },
   records: [],
   filter: {
     startDate: moment().startOf('day'),
@@ -53,7 +59,8 @@ export default (state = initialState, action) => {
         ...baseState,
         records: payload.records,
         pagination: payload.meta,
-        filter: payload.filter
+        filter: payload.filter,
+        stats: payload.stats
       };
     case VIEW_SUCCESS:
       return {

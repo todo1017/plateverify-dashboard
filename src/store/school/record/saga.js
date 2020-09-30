@@ -14,12 +14,14 @@ const {
 function* search({ payload }) {
   try {
     const response = yield call(api.post, '/record/search', payload);
+    const stats = yield call(api.post, '/record/stats', payload);
     yield put({
       type: SEARCH_SUCCESS,
       payload: {
         records: response.data.items,
         meta: response.data.meta,
-        filter: payload
+        filter: payload,
+        stats: stats.data
       }
     });
   } catch (error) {

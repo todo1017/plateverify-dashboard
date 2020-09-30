@@ -99,28 +99,28 @@ const Dashboard = () => {
               <TopCard
                 title="Total Vehicles"
                 desc="all vehicles"
-                value="123"
+                value={recordState.stats.total}
                 color="indigo" />
             </div>
             <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
               <TopCard
                 title="Student"
                 desc="students registered"
-                value="123"
+                value={recordState.stats.student}
                 color="success" />
             </div>
             <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
               <TopCard
                 title="Faculty"
                 desc="faculties registered"
-                value="123"
+                value={recordState.stats.faculty}
                 color="info" />
             </div>
             <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
               <TopCard
                 title="Unknown"
                 desc="unregistered"
-                value="123"
+                value={recordState.stats.unknown}
                 color="pink accent-2" />
             </div>
           </div>

@@ -12,10 +12,11 @@ import {
   Paper,
   Button
 } from "@material-ui/core";
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SimpleMenu from "components/menu/simple";
 import PrivateLink from "components/link/private";
 import memberActions from "store/school/member/actions";
+import Connect from "./connect";
 
 const useEffectOnce = func => useEffect(func, []);
 
@@ -35,6 +36,14 @@ const useStyles = makeStyles({
       color: '#3f51b5 !important'
     }
   },
+  connectVehicle: {
+    color: '#4caf50',
+    whiteSpace: 'nowrap',
+    cursor: 'pointer',
+    '&:hover' : {
+      textDecoration: 'underline',
+    }
+  }
 });
 
 const MemberList = () => {
@@ -98,8 +107,9 @@ const MemberList = () => {
                   <TableCell>Group</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>Phone</TableCell>
-                  <TableCell>Plates</TableCell>
-                  <TableCell>View</TableCell>
+                  <TableCell>Vehicles</TableCell>
+                  <TableCell></TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -115,10 +125,11 @@ const MemberList = () => {
                       )}
                     </TableCell>
                     <TableCell width={50}>
+                      <Connect member={member} />
+                    </TableCell>
+                    <TableCell width={50}>
                       <PrivateLink roles={['ROLE_MANAGE_ALL']} to={`/member/view/${member.id}`}>
-                        <Button variant="outlined" >
-                          View
-                        </Button>
+                        <span>view</span>
                       </PrivateLink>
                     </TableCell>
                   </TableRow>

@@ -21,6 +21,12 @@ const {
   REMOVE_REQUEST,
   REMOVE_SUCCESS,
   REMOVE_FAILURE,
+  FIND_REQUEST,
+  FIND_SUCCESS,
+  FIND_FAILURE,
+  CONNECT_REQUEST,
+  CONNECT_SUCCESS,
+  CONNECT_FAILURE,
 } = actions;
 
 function* list({ payload }) {
@@ -123,6 +129,40 @@ function* remove({ payload }) {
   }
 }
 
+function* find({ payload }) {
+  try {
+    const response = yield call(api.post, '/member/find', payload);
+    yield put({
+      type: FIND_SUCCESS,
+      payload: {
+        vehicles: response.data
+      }
+    });
+  } catch (error) {
+    yield put({
+      type: FIND_FAILURE,
+      payload: { error }
+    });
+  }
+}
+
+function* connect({ payload }) {
+  try {
+    const response = yield call(api.post, '/member/connect', payload);
+    yield put({
+      type: CONNECT_SUCCESS,
+      payload: {
+        member: response.data
+      }
+    });
+  } catch (error) {
+    yield put({
+      type: CONNECT_FAILURE,
+      payload: { error }
+    });
+  }
+}
+
 export function* watchList() {
   yield takeEvery(LIST_REQUEST, list)
 }
@@ -147,6 +187,14 @@ export function* watchRemove() {
   yield takeEvery(REMOVE_REQUEST, remove)
 }
 
+export function* watchFind() {
+  yield takeEvery(FIND_REQUEST, find)
+}
+
+export function* watchConnect() {
+  yield takeEvery(CONNECT_REQUEST, connect)
+}
+
 function* memberSaga() {
   yield all([
     fork(watchList),
@@ -155,6 +203,8 @@ function* memberSaga() {
     fork(watchUpload),
     fork(watchUpdate),
     fork(watchRemove),
+    fork(watchFind),
+    fork(watchConnect),
   ]);
 }
 

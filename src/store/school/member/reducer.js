@@ -20,6 +20,12 @@ const {
   REMOVE_REQUEST,
   REMOVE_SUCCESS,
   REMOVE_FAILURE,
+  FIND_REQUEST,
+  FIND_SUCCESS,
+  FIND_FAILURE,
+  CONNECT_REQUEST,
+  CONNECT_SUCCESS,
+  CONNECT_FAILURE,
 } = actions;
 
 const initialState = {
@@ -31,6 +37,7 @@ const initialState = {
   },
   view: null,
   parsed: null,
+  vehicles: [],
   failed: [],
   action: null,
   error: null,
@@ -44,6 +51,8 @@ export default (state = initialState, action) => {
     ...state,
     action: type
   };
+
+  let members;
 
   switch (type) {
     case LIST_REQUEST:
@@ -60,6 +69,8 @@ export default (state = initialState, action) => {
     case UPLOAD_REQUEST:
     case UPDATE_REQUEST:
     case REMOVE_REQUEST:
+    case FIND_REQUEST:
+    case CONNECT_REQUEST:
       return baseState;
     case LIST_FAILURE:
     case VIEW_FAILURE:
@@ -67,6 +78,8 @@ export default (state = initialState, action) => {
     case UPLOAD_FAILURE:
     case UPDATE_FAILURE:
     case REMOVE_FAILURE:
+    case FIND_FAILURE:
+    case CONNECT_FAILURE:
       return {
         ...baseState,
         error: payload.error
@@ -106,6 +119,22 @@ export default (state = initialState, action) => {
       return {
         ...baseState,
         view: null,
+      };
+    case FIND_SUCCESS:
+      return {
+        ...baseState,
+        vehicles: payload.vehicles,
+      };
+    case CONNECT_SUCCESS:
+      members = state.members.map(member => {
+        if (member.id === payload.member.id) {
+          return payload.member;
+        }
+        return member;
+      });
+      return {
+        ...baseState,
+        members,
       };
     default:
       return state;

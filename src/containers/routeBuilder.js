@@ -6,7 +6,7 @@ import SchoolDashboardView from 'pages/school/dashboard/view/view';
 import SchoolAlertList     from 'pages/school/alert/list/list';
 import SchoolAlertView     from 'pages/school/alert/view/view';
 import SchoolOffenderList  from 'pages/school/offender/list';
-import SchoolMemberList    from 'pages/school/member/list';
+import SchoolMemberList    from 'pages/school/member/list/list';
 import SchoolMemberView    from 'pages/school/member/view/view';
 import SchoolMemberImport  from 'pages/school/member/import';
 import SchoolVehicleList   from 'pages/school/vehicle/list';

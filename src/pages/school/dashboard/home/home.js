@@ -54,6 +54,7 @@ const Dashboard = () => {
 
   useEffectOnce(() => {
     if (recordState.records.length === 0) {
+      console.log(recordState.filter.startDate.toDate());
       dispatch(recordActions.search({
         page: 1,
         limit: 10,

@@ -52,10 +52,10 @@ const Plate = ({ vehicle }) => {
   });
 
   useEffectOnce(() => {
-    formik.values.make  = vehicle.make;
     formik.values.model = vehicle.model;
     formik.values.body  = vehicle.body;
     formik.values.color = vehicle.color;
+    formik.setFieldValue('make', vehicle.make);
   });
 
   return (

@@ -58,13 +58,21 @@ const Sidebar = () => {
         className="app-sidebar-content"
         classes={{ paper: 'side-nav' }}>
         <CustomScrollbars className="scrollbar">
-          <div className={classes.logoWrap}>
-            <img className={classes.logo} src={authState.user.school.logo} alt=""/>
-            <div className={classes.schoolName}>
-              {authState.user.school.name}
+          {authState.user.school ?
+            <div className={classes.logoWrap}>
+              <img className={classes.logo} src={authState.user.school.logo} alt=""/>
+              <div className={classes.schoolName}>
+                {authState.user.school.name}
+              </div>
+              <div className={classes.protect}>Protected By Plateverify</div>
+            </div> :
+            <div className={classes.logoWrap}>
+              <img className={classes.logo} src="/logo.png" alt=""/>
+              <div className={classes.schoolName}>
+                Plateverify
+              </div>
             </div>
-            <div className={classes.protect}>Protected By Plateverify</div>
-          </div>
+          }
           <Navigation menuItems={menuOptions}/>
         </CustomScrollbars>
       </Drawer>

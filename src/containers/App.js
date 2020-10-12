@@ -30,7 +30,7 @@ const App = () => {
     }
 
     if (authState.action === authAction.TOKEN_SUCCESS) {
-      if (authState.user.roles.includes('ROLE_SCOPE_SCHOOL') === -1) {
+      if (!authState.user.school) {
         FinalLayout = AdminLayout;
         document.body.classList.add('dark-green');
       } else {

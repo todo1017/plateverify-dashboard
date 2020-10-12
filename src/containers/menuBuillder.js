@@ -11,67 +11,65 @@ const menuGenerator = (prefix) => [
   {
     name: 'Stream',
     type: 'section',
+    roles: ['ROLE_SCOPE_SCHOOL'],
     children: [
       {
         name: 'Dashboard',
         type: 'item',
         Icon: DashboardIcon,
         link: `/${prefix}/dashboard`,
-        roles: ['ROLE_SCOPE_SCHOOL'],
       },
       {
         name: 'Alert',
         type: 'item',
         Icon: NotificationsIcon,
         link: `/${prefix}/alert`,
-        roles: ['ROLE_SCOPE_SCHOOL'],
       }
     ]
   },
   {
     name: 'Manage',
     type: 'section',
+    roles: ['ROLE_SCOPE_SCHOOL'],
     children: [
       {
         name: 'Offender',
         type: 'item',
         Icon: PetsIcon,
         link: `/${prefix}/offender`,
-        roles: ['ROLE_SCOPE_SCHOOL'],
       },
       {
         name: 'Member',
         type: 'item',
         Icon: GroupIcon,
         link: `/${prefix}/member`,
-        roles: ['ROLE_SCOPE_SCHOOL'],
       },
       {
         name: 'Vehicle',
         type: 'item',
         Icon: DriveEtaIcon,
         link: `/${prefix}/vehicle`,
-        roles: ['ROLE_SCOPE_SCHOOL'],
       },
       {
         name: 'Setting',
         type: 'item',
         Icon: SettingsIcon,
         link: `/${prefix}/setting`,
-        roles: ['ROLE_SCOPE_SCHOOL', 'ROLE_MANAGE_ALL'],
+        roles: ['ROLE_MANAGE_ALL'],
       }
     ]
   },
   {
     name: 'Temporary',
     type: 'section',
-    roles: ['ROLE_SCOPE_ADMIN', 'ROLE_MANAGE_ALL'],
+    roles: ['ROLE_SCOPE_PLATEVERIFY'],
     children: [
       {
-        name: 'Integration',
+        name: 'Backup',
         type: 'item',
         Icon: BackupIcon,
-        link: '/admin/setting',
+        link: '/admin/backup',
+        roles: ['ROLE_SCOPE_PLATEVERIFY', 'ROLE_MANAGE_ALL'],
       }
     ]
   }

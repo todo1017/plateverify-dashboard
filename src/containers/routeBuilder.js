@@ -13,6 +13,7 @@ import SchoolVehicleList   from 'pages/school/vehicle/list';
 import SchoolVehicleView   from 'pages/school/vehicle/view/view';
 import SchoolVehicleImport from 'pages/school/vehicle/import';
 import SchoolSetting       from 'pages/school/setting/setting';
+import AdminBackup         from 'pages/admin/backup';
 
 const routeGenerator = (prefix) => [
   {
@@ -91,7 +92,13 @@ const routeGenerator = (prefix) => [
     roles: ['ROLE_SCOPE_SCHOOL', 'ROLE_MANAGE_ALL'],
     pageTitle: 'Settings',
     component: SchoolSetting
-  }
+  },
+  {
+    path: '/admin/backup',
+    roles: ['ROLE_SCOPE_PLATEVERIFY', 'ROLE_MANAGE_ALL'],
+    pageTitle: 'Backup',
+    component: AdminBackup
+  }  
 ];
 
 const builder = (user) => {

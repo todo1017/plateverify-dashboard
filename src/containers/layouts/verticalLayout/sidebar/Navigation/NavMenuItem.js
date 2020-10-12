@@ -3,15 +3,13 @@ import { List } from '@material-ui/core';
 import { NavLink } from 'react-router-dom';
 
 const NavMenuItem = props => {
-  const {name, icon, link} = props;
+  const {name, Icon, link} = props;
 
   return (
     <List component="div" className='nav-menu-item'>
       <NavLink className="prepend-icon nav-menu-link" to={link}>
         {/* Display an icon if any */}
-        {!!icon && (
-          <i className={'zmdi zmdi-hc-fw  zmdi-' + icon}/>
-        )}
+        <Icon style={{ marginRight: 12, fontSize: 16 }} />
         <span className="nav-text">
           {name}
         </span>

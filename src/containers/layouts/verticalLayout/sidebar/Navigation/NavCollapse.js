@@ -11,7 +11,7 @@ const useEffectOnlyOnce = (func) => useEffect(func, []);
 const NavCollapse = props => {
   const history = useHistory();
 
-  const {name, icon, children = []} = props;
+  const {name, Icon, children = []} = props;
   const isExpandable = children && children.length > 0;
   const [open, setOpen] = React.useState(false);
 
@@ -66,9 +66,7 @@ const NavCollapse = props => {
   const MenuCollapse = (
     <ListItem className='nav-collapse-btn' button onClick={handleClick}>
       {/* Display an icon if any */}
-      {!!icon && (
-        <i className={'zmdi zmdi-hc-fw  zmdi-' + icon}/>
-      )}
+      <Icon />
       <span className='nav-text'>
         {name}
       </span>

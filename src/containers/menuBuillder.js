@@ -1,51 +1,77 @@
 import slugify from "slugify";
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import PetsIcon from '@material-ui/icons/Pets';
+import GroupIcon from '@material-ui/icons/Group';
+import DriveEtaIcon from '@material-ui/icons/DriveEta';
+import SettingsIcon from '@material-ui/icons/Settings';
+import BackupIcon from '@material-ui/icons/Backup';
 
 const menuGenerator = (prefix) => [
   {
-    name: '',
+    name: 'Stream',
     type: 'section',
     children: [
       {
         name: 'Dashboard',
         type: 'item',
-        icon: 'view-dashboard',
+        Icon: DashboardIcon,
         link: `/${prefix}/dashboard`,
         roles: ['ROLE_SCOPE_SCHOOL'],
       },
       {
         name: 'Alert',
         type: 'item',
-        icon: 'notifications',
+        Icon: NotificationsIcon,
         link: `/${prefix}/alert`,
         roles: ['ROLE_SCOPE_SCHOOL'],
-      },
+      }
+    ]
+  },
+  {
+    name: 'Manage',
+    type: 'section',
+    children: [
       {
         name: 'Offender',
         type: 'item',
-        icon: 'fire',
+        Icon: PetsIcon,
         link: `/${prefix}/offender`,
         roles: ['ROLE_SCOPE_SCHOOL'],
       },
       {
         name: 'Member',
         type: 'item',
-        icon: 'accounts',
+        Icon: GroupIcon,
         link: `/${prefix}/member`,
         roles: ['ROLE_SCOPE_SCHOOL'],
       },
       {
         name: 'Vehicle',
         type: 'item',
-        icon: 'car',
+        Icon: DriveEtaIcon,
         link: `/${prefix}/vehicle`,
         roles: ['ROLE_SCOPE_SCHOOL'],
       },
       {
         name: 'Setting',
         type: 'item',
-        icon: 'settings',
+        Icon: SettingsIcon,
         link: `/${prefix}/setting`,
         roles: ['ROLE_SCOPE_SCHOOL', 'ROLE_MANAGE_ALL'],
+      }
+    ]
+  },
+  {
+    name: 'Temporary',
+    type: 'section',
+    roles: ['ROLE_SCOPE_ADMIN', 'ROLE_MANAGE_ALL'],
+    children: [
+      {
+        name: 'Integration',
+        type: 'item',
+        Icon: BackupIcon,
+        link: '/admin/setting',
       }
     ]
   }

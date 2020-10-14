@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import * as moment from "moment";
 
-export default function Visit({ records }) {
-  
-  const sorted = records.sort((a, b) => {
+const VisitHistory = ({ data }) => {
+
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    setItems([...data]);
+  }, [ data ]);
+
+  const sorted = items.sort((a, b) => {
     if (a.created_at > b.created_at) {
       return -1;
     }
@@ -22,13 +28,13 @@ export default function Visit({ records }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {sorted.map(record => (
-            <TableRow key={record.id}>
+          {sorted.map(item => (
+            <TableRow key={item.id}>
               <TableCell component="th" scope="row">
-                {moment(record.created_at).format('MM/DD/YY | hh:mm A')}
+                {moment(item.created_at).format('MM/DD/YY | hh:mm A')}
               </TableCell>
-              <TableCell>{record.meta.location}</TableCell>
-              <TableCell>{record.meta.direction}</TableCell>
+              <TableCell>{item.meta.location}</TableCell>
+              <TableCell>{item.meta.direction}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -36,3 +42,5 @@ export default function Visit({ records }) {
     </TableContainer>
   );
 }
+
+export default VisitHistory;

@@ -62,6 +62,7 @@
     "react-draft-wysiwyg": "^1.14.3",
     "react-dropzone": "^10.2.2",
     "react-google-maps": "^9.4.5",
+    "react-hook-form": "^6.9.2",
     "react-hot-loader": "^4.12.18",
     "react-icons": "^3.8.0",
     "react-intl": "^3.9.3",

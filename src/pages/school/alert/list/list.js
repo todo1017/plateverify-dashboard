@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { useRecoilState } from "recoil";
 import { Paper, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { ToggleButton, ToggleButtonGroup, Pagination } from "@material-ui/lab";
-import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
+import { MuiPickersUtilsProvider, DateTimePicker } from "@material-ui/pickers";
 import MomentUtils from '@date-io/moment';
-import * as moment from "moment";
-import alertActions from "store/school/alert/actions";
-import Item from "./item";
+import alertListAtom from "atoms/alertList";
+import { useEffectOnlyOnce } from "util/custom";
+import api from "containers/api";
+import StatusBox from "components/_custom/statusBox";
+import AlertBox from "./alertBox";
 
 const useStyles = makeStyles({
   filterCard: {
@@ -27,7 +29,7 @@ const useStyles = makeStyles({
     },
   },
   dateTimeBox: {
-    width: 110,
+    width: 150,
   },
   item: {
     marginTop: 16,
@@ -43,65 +45,77 @@ const useStyles = makeStyles({
   }
 });
 
-const useEffectOnce = func => useEffect(func, []);
-
-const Dashboard = () => {
+const AlertList = () => {
 
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const alertState = useSelector(state => state.School.Alert);
+  const [alertList, setAlertList] = useRecoilState(alertListAtom);
   const [status, setStatus] = useState('active');
-  const [startDate, setStartDate] = useState(moment());
-  const [endDate, setEndDate] = useState(moment());
-  const [filterChanged, setFilterChanged] = useState(false);
-  const pageCount = Math.ceil(alertState.pagination.totalItems / 10);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const pageCount = Math.ceil(alertList.pagination.totalItems / 10);
 
-  useEffectOnce(() => {
-    if (alertState.alerts.length === 0) {
-      dispatch(alertActions.search({
-        page: 1,
-        limit: 10,
-        startDate: alertState.filter.startDate,
-        endDate: alertState.filter.endDate,
-        status: alertState.filter.status
-      }));
+  const search = async payload => {
+    setAlertList({ ...alertList, isLoading: true });
+    const response = await api.post('/alert/search', {
+      ...payload,
+      startDate: payload.startDate.format('YYYY-MM-DD HH:mm'),
+      endDate: payload.endDate.format('YYYY-MM-DD HH:mm')
+    });
+    if (response) {
+      setAlertList({
+        ...alertList,
+        init: true,
+        isLoading: false,
+        items: response.data.items,
+        pagination: response.data.meta,
+        startDate: payload.startDate,
+        endDate: payload.endDate,
+        status: payload.status
+      });
+    } else {
+      setAlertList({ ...alertList, isLoading: false });
     }
-    setStatus(alertState.filter.status);
-    setStartDate(alertState.filter.startDate);
-    setEndDate(alertState.filter.endDate);
-  });
-
-  useEffect(() => {
-    let {startDate: startDate_, endDate: endDate_, status: status_} = alertState.filter;
-    let newStr = startDate.format('YYYY-MM-DD') + endDate.format('YYYY-MM-DD') + status;
-    let oldStr = startDate_.format('YYYY-MM-DD') + endDate_.format('YYYY-MM-DD') + status_;
-    setFilterChanged(newStr !== oldStr);
-  }, [status, startDate, endDate, alertState.filter]);
-
-  const handlePagination = (e, page) => {
-    dispatch(alertActions.search({
-      page,
-      limit: 10,
-      startDate: alertState.filter.startDate,
-      endDate: alertState.filter.endDate,
-      status: alertState.filter.status
-    }));
   }
 
-  const handleChangeActive= (event, value) => {
+  useEffectOnlyOnce(() => {
+    if (!alertList.init) {
+      search({
+        page: 1,
+        limit: 10,
+        startDate: alertList.startDate,
+        endDate: alertList.endDate,
+        status: alertList.status
+      });
+    }
+    setStartDate(alertList.startDate);
+    setEndDate(alertList.endDate);
+    setStatus(alertList.status);
+  });
+
+  const handlePagination = (e, page) => {
+    search({
+      page,
+      limit: 10,
+      startDate: alertList.startDate,
+      endDate: alertList.endDate,
+      status: alertList.status
+    });
+  };
+
+  const handleStatusChange= (e, value) => {
     if (value) {
       setStatus(value);
     }
   };
 
   const applyFilter = () => {
-    dispatch(alertActions.search({
+    search({
       page: 1,
       limit: 10,
       startDate,
       endDate,
       status
-    }));
+    });
   };
 
   return (
@@ -112,45 +126,47 @@ const Dashboard = () => {
             <ToggleButtonGroup
               size="small"
               value={status}
-              onChange={handleChangeActive}
-              exclusive>
+              onChange={handleStatusChange}
+              exclusive
+            >
               <ToggleButton value="active">Active</ToggleButton>
               <ToggleButton value="checked">Checked</ToggleButton>
             </ToggleButtonGroup>
             <MuiPickersUtilsProvider utils={MomentUtils}>
-              <DatePicker 
+              <DateTimePicker
                 className={classes.dateTimeBox}
-                format="yyyy/MM/DD"
+                format="YYYY/MM/DD HH:mm"
                 inputVariant="outlined"
                 value={startDate}
-                onChange={setStartDate} />
-              <DatePicker 
+                onChange={setStartDate}
+              />
+              <DateTimePicker
                 className={classes.dateTimeBox}
-                format="yyyy/MM/DD"
+                format="YYYY/MM/DD HH:mm"
                 inputVariant="outlined"
                 value={endDate}
-                onChange={setEndDate} />
+                onChange={setEndDate}
+              />
             </MuiPickersUtilsProvider>
-            {filterChanged &&
-              <Button variant="contained" color="secondary" onClick={applyFilter}>
-                Apply
-              </Button>
-            }
+            <Button variant="contained" color="secondary" onClick={applyFilter}>
+              Apply
+            </Button>
           </Paper>
-
           <Pagination
             classes={{ ul: classes.justifyCenter }}
             count={pageCount}
-            page={alertState.pagination.currentPage}
-            onChange={handlePagination} />
-
-          <Paper className={classes.item}>
-            {alertState.alerts.length === 0 &&
-              <div className="p-4 text-center flex-fill">NO RESULT</div>
-            }
-            {alertState.alerts.map(alert =>
-              <Item alert={alert} key={alert.id} />
-            )}
+            page={alertList.pagination.currentPage}
+            onChange={handlePagination}
+          />
+          <Paper>
+            <StatusBox
+              height={100}
+              status={alertList.isLoading ? 'wait' : alertList.items.length === 0 ? 'empty' : ''}
+            >
+              {alertList.items.map(alert =>
+                <AlertBox alert={alert} key={alert.id} />
+              )}
+            </StatusBox>
           </Paper>
         </div>
       </div>
@@ -158,4 +174,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default AlertList;

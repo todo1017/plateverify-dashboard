@@ -1,5 +1,5 @@
 import React from "react";
-import PrivateLink from "components/link/private";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import * as moment from "moment";
 import classnames from "classnames";
@@ -26,7 +26,7 @@ const groupColor = {
   offender: '#f44336',
 };
 
-const Item = ({ alert }) => {
+const AlertBox = ({ alert }) => {
 
   const classes = useStyles();
   
@@ -70,9 +70,9 @@ const Item = ({ alert }) => {
             </div>
           </div>
           <p className="text-primary mt-auto mb-0 pointer">
-            <PrivateLink roles={[]} to={`/alert/${alert.id}`}>
+            <Link roles={[]} to={`/alert/${alert.id}`}>
               <span>Detail</span>
-            </PrivateLink>
+            </Link>
           </p>
         </div>
 
@@ -81,4 +81,4 @@ const Item = ({ alert }) => {
   );
 }
 
-export default Item;
+export default AlertBox;

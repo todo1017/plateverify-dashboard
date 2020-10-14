@@ -1,19 +1,10 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
+import { useRecoilState } from "recoil";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TablePagination,
-  Paper
-} from "@material-ui/core";
-import offenderActions from "store/school/offender/actions";
-
-const useEffectOnce = func => useEffect(func, []);
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Paper } from "@material-ui/core";
+import offenderListAtom from "atoms/offenderList";
+import { useEffectOnlyOnce } from "util/custom";
+import api from "containers/api";
 
 const useStyles = makeStyles({
   head: {
@@ -23,27 +14,46 @@ const useStyles = makeStyles({
   },
 });
 
-
 const OffenderList = () => {
 
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const offenderState = useSelector(state => state.School.Offender);
+  const [offenderList, setOffenderList] = useRecoilState(offenderListAtom);
 
-  useEffectOnce(() => {
-    if (offenderState.offenders.length === 0) {
-      dispatch(offenderActions.list({
+  const search = async payload => {
+    setOffenderList({
+      ...offenderList,
+      isLoading: true
+    });
+    const response = await api.post('/offender/list', payload);
+    if (response) {
+      setOffenderList({
+        ...offenderList,
+        isLoading: false,
+        items: response.data.items,
+        pagination: response.data.meta
+      });
+    } else {
+      setOffenderList({
+        ...offenderList,
+        isLoading: false
+      });
+    }
+  };
+
+  useEffectOnlyOnce(() => {
+    if (!offenderList.init) {
+      search({
         page: 1,
         limit: 10
-      }));
+      });
     }
   });
 
   const handleChangePage = (e, page) => {
-    dispatch(offenderActions.list({
+    search({
       page: page + 1,
       limit: 10
-    }));
+    });
   };
 
   return (
@@ -66,7 +76,7 @@ const OffenderList = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {offenderState.offenders.map(offender =>
+                {offenderList.items.map(offender =>
                   <TableRow key={offender.id}>
                     <TableCell>
                       <span className="text-uppercase">
@@ -87,10 +97,10 @@ const OffenderList = () => {
             </Table>
             <TablePagination
               component="div"
-              count={offenderState.pagination.totalItems}
+              count={offenderList.pagination.totalItems}
               rowsPerPage={10}
               rowsPerPageOptions={[10]}
-              page={offenderState.pagination.currentPage-1}
+              page={offenderList.pagination.currentPage-1}
               onChangePage={handleChangePage}
             />
           </TableContainer>

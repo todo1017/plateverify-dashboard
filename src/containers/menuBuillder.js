@@ -1,4 +1,3 @@
-import slugify from "slugify";
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import PetsIcon from '@material-ui/icons/Pets';
@@ -7,7 +6,7 @@ import DriveEtaIcon from '@material-ui/icons/DriveEta';
 import SettingsIcon from '@material-ui/icons/Settings';
 import BackupIcon from '@material-ui/icons/Backup';
 
-const menuGenerator = (prefix) => [
+const menuGenerator = () => [
   {
     name: 'Stream',
     type: 'section',
@@ -17,13 +16,13 @@ const menuGenerator = (prefix) => [
         name: 'Dashboard',
         type: 'item',
         Icon: DashboardIcon,
-        link: `/${prefix}/dashboard`,
+        link: '/dashboard',
       },
       {
         name: 'Alert',
         type: 'item',
         Icon: NotificationsIcon,
-        link: `/${prefix}/alert`,
+        link: '/alert',
       }
     ]
   },
@@ -36,25 +35,25 @@ const menuGenerator = (prefix) => [
         name: 'Offender',
         type: 'item',
         Icon: PetsIcon,
-        link: `/${prefix}/offender`,
+        link: '/offender',
       },
       {
         name: 'Member',
         type: 'item',
         Icon: GroupIcon,
-        link: `/${prefix}/member`,
+        link: '/member',
       },
       {
         name: 'Vehicle',
         type: 'item',
         Icon: DriveEtaIcon,
-        link: `/${prefix}/vehicle`,
+        link: '/vehicle',
       },
       {
         name: 'Setting',
         type: 'item',
         Icon: SettingsIcon,
-        link: `/${prefix}/setting`,
+        link: '/setting',
         roles: ['ROLE_MANAGE_ALL'],
       }
     ]
@@ -77,17 +76,8 @@ const menuGenerator = (prefix) => [
 
 const builder = (user) => {
   let finalMenus = [];
-
+  const menus = menuGenerator();
   if (user) {
-
-    let prefix;
-    if (user.roles.includes('ROLE_SCOPE_PLATEVERIFY')) {
-      prefix = 'ppt';
-    } else {
-      prefix = slugify(user.school.name, { replacement: '-', lower: true });
-    }
-
-    const menus = menuGenerator(prefix);
     finalMenus = menus.filter(m => {
       if (m.roles) {
         let merged = [...new Set([...user.roles, ...m.roles])];
@@ -111,7 +101,6 @@ const builder = (user) => {
     });
 
   } else {
-    const menus = menuGenerator('');
     finalMenus = menus[0];
   }
 

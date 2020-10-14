@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useRecoilValue, useRecoilState } from "recoil";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import CustomScrollbars from "util/CustomScrollbars";
-import layoutActions from "store/layout/actions";
-import Navigation from "./Navigation";
+import authAtom from "atoms/auth";
+import navAtom from "atoms/nav";
 import menuBuillder from "containers/menuBuillder";
+import { useEffectOnlyOnce } from "util/custom";
+import Navigation from "./Navigation";
 
 const useStyles = makeStyles({
   logoWrap: {
@@ -28,41 +30,35 @@ const useStyles = makeStyles({
 const Sidebar = () => {
 
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const { navCollapsed, width } = useSelector(state => state.Layout);
-  const authState = useSelector(state => state.Auth);
+  const auth = useRecoilValue(authAtom);
+  const [nav, setNav] = useRecoilState(navAtom);
+  const [width, setWidth] = useState(0);
+  const type = width < 768 ? 'temporary' : 'permanent';
+  const menuOptions = menuBuillder(auth.user);
+  const closeNav = () => setNav({ open: false });
 
-  useEffect(() => {
+  useEffectOnlyOnce(() => {
+    setWidth(window.innerWidth);
     window.addEventListener('resize', () => {
-      dispatch(layoutActions.updateWindowWidth(window.innerWidth))
+      setWidth(window.innerWidth);
     });
-  }, [dispatch]);
-
-  const onToggleCollapsedNav = (e) => {
-    dispatch(layoutActions.toggleNav());
-  };
-
-  let type = 'permanent';
-  if (width < 768) {
-    type = 'temporary';
-  }
-
-  let menuOptions = menuBuillder(authState.user);
+  })
 
   return (
     <div className="app-sidebar d-none d-md-flex">
       <Drawer
         variant={type}
-        open={width < 768 ? navCollapsed : true}
-        onClose={onToggleCollapsedNav}
+        open={width < 768 ? nav.open : true}
+        onClose={closeNav}
         className="app-sidebar-content"
-        classes={{ paper: 'side-nav' }}>
+        classes={{ paper: 'side-nav' }}
+      >
         <CustomScrollbars className="scrollbar">
-          {authState.user.school ?
+          {auth.user.school ?
             <div className={classes.logoWrap}>
-              <img className={classes.logo} src={authState.user.school.logo} alt=""/>
+              <img className={classes.logo} src={auth.user.school.logo} alt=""/>
               <div className={classes.schoolName}>
-                {authState.user.school.name}
+                {auth.user.school.name}
               </div>
               <div className={classes.protect}>Protected By Plateverify</div>
             </div> :

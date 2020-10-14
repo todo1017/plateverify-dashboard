@@ -1,44 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button } from "@material-ui/core";
 import Alert from '@material-ui/lab/Alert';
 import ListIcon from '@material-ui/icons/List';
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import classnames from "classnames";
-import PrivateLink from "components/link/private";
-import FormikSelect from "components/formik/formikSelect";
 import Dropzone from "components/dropzone/dropzone";
-import memberActions from "store/school/member/actions";
-
-const validationSchema = Yup.object().shape({
-  group: Yup.string().required('Required'),
-  first_name: Yup.string().required('Required'),
-  last_name: Yup.string().required('Required'),
-  address: Yup.string().required('Required'),
-  email: Yup.string().required('Required'),
-  phone: Yup.string().required('Required'),
-  grade: Yup.string().required('Required'),
-  graduation: Yup.string().required('Required'),
-});
-
-const useEffectOnce = func => useEffect(func, []);
+import PageHead from "components/_custom/pageHead";
+import StatusBox from "components/_custom/statusBox";
+import FormSelect from "components/_custom/formSelect";
+import api from "containers/api";
 
 const useStyles = makeStyles({
-  actionTop: {
-    marginBottom: 16,
-    textAlign: 'right',
-    '& > *+*': {
-      marginLeft: 8
-    }
-  },
-  head: {
-    '& .MuiTableCell-head': {
-      color: '#3f51b5 !important'
-    }
-  },
-  box: {
+  padding: {
     padding: 16
   },
   space: {
@@ -55,52 +29,33 @@ const useStyles = makeStyles({
 const MemberImport = () => {
 
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const memberState = useSelector(state => state.School.Member);
-  const options = memberState.parsed? memberState.parsed.meta.fields : [];
+  const { control, handleSubmit, errors, reset, setValue } = useForm();
   const [file, setFile] = useState(null);
-
-  useEffectOnce(() => {
-    dispatch({ type: memberActions.PARSE_CLEAR });
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      group: '',
-      first_name: '',
-      last_name: '',
-      address: '',
-      email: '',
-      phone: '',
-      grade: '',
-      graduation: '',
-    },
-    validationSchema,
-    onSubmit: values => {
-      let data = new FormData();
-      data.append('file', file);
-      data.append('group', values.group);
-      data.append('first_name', values.first_name);
-      data.append('last_name', values.last_name);
-      data.append('address', values.address);
-      data.append('email', values.email);
-      data.append('phone', values.phone);
-      data.append('grade', values.grade);
-      data.append('graduation', values.graduation);
-      dispatch(memberActions.upload(data));
+  const [isParsing, setIsParsing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [parsed, setParsed] = useState(null);
+  const [failed, setFailed] = useState(null);
+  const options = parsed? parsed.meta.fields : [];
+  const formStatus = (isParsing || isUploading) ? 'wait' : !parsed ? 'empty' : '';
+  const onSubmit = async values => {
+    let data = new FormData();
+    data.append('file', file);
+    data.append('group', values.group);
+    data.append('first_name', values.first_name);
+    data.append('last_name', values.last_name);
+    data.append('address', values.address);
+    data.append('email', values.email);
+    data.append('phone', values.phone);
+    data.append('grade', values.grade);
+    data.append('graduation', values.graduation);
+    
+    setIsUploading(true);
+    const response = await api.post('/member/import', data);
+    if (response) {
+      setFailed(response.data.failed);
     }
-  });
-
-  const clearForm = () => {
-    formik.values.group = '';
-    formik.values.first_name = '';
-    formik.values.last_name = '';
-    formik.values.address = '';
-    formik.values.email = '';
-    formik.values.phone = '';
-    formik.values.grade = '';
-    formik.values.graduation = '';
-  }
+    setIsUploading(false);
+  };
 
   const autoMap = () => {
     const last = options[options.length-1];
@@ -114,36 +69,46 @@ const MemberImport = () => {
       'grade',
       'graduation',
     ];
-    
     for (let i = 0; i < fields.length; i++) {
-      formik.setFieldValue(fields[i], options[i] || last);
+      setValue(fields[i], options[i] || last);
     }
-  }
+  };
 
-  const handleParse = files => {
+  const handleParse = async files => {
     setFile(files[0]);
-    clearForm();
     let data = new FormData();
     data.append('type', 'parse');
     data.append('file', files[0]);
-    dispatch(memberActions.parse(data));
+    
+    reset();
+    setIsParsing(true);
+    setParsed(null);
+    setFailed(null);
+    const response = await api.post('/member/parse', data);
+    if (response) {
+      setParsed(response.data);
+    }
+    setIsParsing(false);
   };
+
+  console.log(parsed);
 
   return (
     <div className="app-wrapper">
       <div className="dashboard animated slideInUpTiny animation-duration-3">
-        <div className={classes.actionTop}>
-          <PrivateLink roles={[]} to="/member">
+        <PageHead>
+          <Link to="/member">
             <Button
               color="primary"
               variant="contained"
-              startIcon={<ListIcon />}>
+              startIcon={<ListIcon />}
+            >
               List
             </Button>
-          </PrivateLink>
-        </div>
-        <Paper className={classes.root}>
-          <div className={classnames(classes.box, classes.space)}>
+          </Link>
+        </PageHead>
+        <Paper>
+          <div className={classes.padding}>
             <Dropzone onDrop={handleParse}>
               {file
                 ?<>
@@ -153,60 +118,125 @@ const MemberImport = () => {
                 :<div>Drag 'n' drop some files here, or click to select files</div>
               }
             </Dropzone>
-
-            {memberState.parsed &&
-              <form className={classes.space}>
+          </div>
+          <StatusBox height={100} type="line" status={formStatus}>
+            <div className={classes.space}>
+              {parsed &&
+                <Alert variant="outlined" severity="info">
+                  Total Rows: {parsed.data.length}
+                </Alert>
+              }
+              {failed && failed.length > 0 &&
+                <Alert severity="error">
+                  Count of Failed Rows: {failed.length}
+                </Alert>
+              }
+              {failed && failed.length === 0 &&
+                <Alert severity="success">Success</Alert>
+              }
+              <form className={classes.space} onSubmit={handleSubmit(onSubmit)}>
+                <FormSelect
+                  label="Select Group"
+                  name="group"
+                  defaultValue=""
+                  error={!!errors.group}
+                  helperText={errors.group && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
+                <FormSelect
+                  label="Select First Name"
+                  name="first_name"
+                  defaultValue=""
+                  error={!!errors.first_name}
+                  helperText={errors.first_name && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
+                <FormSelect
+                  label="Select Last Name"
+                  name="last_name"
+                  defaultValue=""
+                  error={!!errors.last_name}
+                  helperText={errors.last_name && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
+                <FormSelect
+                  label="Select Address"
+                  name="address"
+                  defaultValue=""
+                  error={!!errors.address}
+                  helperText={errors.address && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
+                <FormSelect
+                  label="Select Email"
+                  name="email"
+                  defaultValue=""
+                  error={!!errors.email}
+                  helperText={errors.email && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
+                <FormSelect
+                  label="Select Phone"
+                  name="phone"
+                  defaultValue=""
+                  error={!!errors.phone}
+                  helperText={errors.phone && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
+                <FormSelect
+                  label="Select Grade"
+                  name="grade"
+                  defaultValue=""
+                  error={!!errors.grade}
+                  helperText={errors.grade && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
+                <FormSelect
+                  label="Select Graduation"
+                  name="graduation"
+                  defaultValue=""
+                  error={!!errors.graduation}
+                  helperText={errors.graduation && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
                 <Button
-                  onClick={autoMap}
+                  disabled={isUploading}
+                  fullWidth
                   variant="outlined"
-                  color="primary">
-                  Auto Map
+                  size="large"
+                  onClick={autoMap}
+                >
+                  auto map
                 </Button>
-                <div className="row">
-                  <div className="col-md-6 col-sm-12">
-                    <div className={classes.space}>
-                      <FormikSelect formik={formik} options={options} name="group" label="Group" />
-                      <FormikSelect formik={formik} options={options} name="first_name" label="First Name" />
-                      <FormikSelect formik={formik} options={options} name="last_name" label="Last Name" />
-                      <FormikSelect formik={formik} options={options} name="address" label="Address" />
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-12">
-                    <div className={classes.space}>
-                      <FormikSelect formik={formik} options={options} name="email" label="Email" />
-                      <FormikSelect formik={formik} options={options} name="phone" label="Phone" />
-                      <FormikSelect formik={formik} options={options} name="grade" label="Grade" />
-                      <FormikSelect formik={formik} options={options} name="graduation" label="Graduation" />
-                    </div>
-                  </div>
-                </div>
                 <Button
-                  onClick={formik.submitForm}
+                  disabled={isUploading}
+                  fullWidth
+                  type="submit"
                   variant="contained"
                   color="primary"
-                  fullWidth>
-                  Start Import
+                  size="large"
+                >
+                  upload
                 </Button>
               </form>
-            }
-            
-            {memberState.action === memberActions.UPLOAD_FAILURE &&
-              <Alert severity="error">Incomplete</Alert>
-            }
-
-            {memberState.action === memberActions.UPLOAD_SUCCESS &&
-              <div className={classes.space}>
-                <Alert severity="success">
-                  Total Rows: {memberState.parsed.data.length}
-                </Alert>
-                {memberState.failed.length > 0 &&
-                  <Alert severity="error">
-                    Failed Rows: {memberState.failed.length}
-                  </Alert>
-                }
-              </div>
-            }
-          </div>
+            </div>
+          </StatusBox>
         </Paper>
       </div>
     </div>

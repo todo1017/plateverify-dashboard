@@ -1,25 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
+import { useRecoilState } from "recoil";
 import { makeStyles } from "@material-ui/core/styles";
-import { Accordion, AccordionSummary, AccordionDetails, Button } from "@material-ui/core";
+import { Button, List, ListItem, ListItemIcon, ListItemText, Divider, Paper, Collapse, TextField, MenuItem } from "@material-ui/core";
 import ListIcon from '@material-ui/icons/List';
-import PrivateLink from "components/link/private";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import FormikInput from "components/formik/formikInput";
-import FormikSelect from "components/formik/formikSelect";
-import memberActions from "store/school/member/actions";
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import api from "containers/api";
+import PageHead from "components/_custom/pageHead";
+import StatusBox from "components/_custom/statusBox";
+import memberViewAtom from "atoms/memberView";
+import { useEffectOnlyOnce } from "util/custom";
 
 const useStyles = makeStyles({
-  actionTop: {
-    marginBottom: 16,
-    textAlign: 'right',
-    '& > *+*': {
-      marginLeft: 8
-    }
-  },
   head: {
     color: '#3f51b5',
     fontSize: 18
@@ -31,133 +25,249 @@ const useStyles = makeStyles({
   }
 });
 
-const validationSchema = Yup.object().shape({
-  group: Yup.string().required('Required'),
-  first_name: Yup.string().required('Required'),
-  last_name: Yup.string().required('Required'),
-  address: Yup.string().required('Required'),
-  email: Yup.string().required('Required'),
-  phone: Yup.string().required('Required'),
-  grade: Yup.string().required('Required'),
-  graduation: Yup.string().required('Required'),
-});
-
-const useEffectOnce = func => useEffect(func, []);
-
 const MemberView = () => {
 
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const memberState = useSelector(state => state.School.Member);
   const { id } = useParams();
-  const [init, setInit] = useState(false);
-
-  const formik = useFormik({
-    initialValues: {
-      group: '',
-      first_name: '',
-      last_name: '',
-      address: '',
-      email: '',
-      phone: '',
-      grade: '',
-      graduation: '',
-    },
-    validationSchema,
-    onSubmit: values => {
-      dispatch(memberActions.update({
-        id,
-        ...values
-      }));
+  const [memberView, setMemberView] = useRecoilState(memberViewAtom);
+  const [memberOpen, setMemberOpen] = useState(true);
+  const [vehiclesOpen, setVehiclesOpen] = useState(false);
+  const { control, handleSubmit, errors } = useForm();
+  const onSubmit = async data => {
+    setMemberView({...memberView, isUpdating: true});
+    const response = await api.post('/member/update', {
+      id,
+      ...data
+    });
+    if (response) {
+      console.log(response);
+      setMemberView({
+        ...memberView,
+        isUpdating: false,
+        data: response.data
+      });
+    } else {
+      setMemberView({
+        ...memberView,
+        isUpdating: false,
+        data: null
+      });
     }
-  });
+  };
 
-  useEffectOnce(() => {
-    dispatch(memberActions.view({ id }));
+  useEffectOnlyOnce(() => {
+    setMemberView({...memberView, isLoading: true});
+    const load = async () => {
+      const response = await api.post('/member/view', { id });
+      if (response) {
+        setMemberView({
+          ...memberView,
+          isLoading: false,
+          data: response.data
+        });
+      } else {
+        setMemberView({
+          ...memberView,
+          isLoading: false,
+          data: null
+        });
+      }
+    };
+    load();
   });
-
-  useEffect(() => {
-    if (!init && memberState.view && memberState.view.id === id) {
-      formik.values.group = memberState.view.group;
-      formik.values.first_name = memberState.view.first_name;
-      formik.values.last_name = memberState.view.last_name;
-      formik.values.address = memberState.view.address;
-      formik.values.email = memberState.view.email;
-      formik.values.phone = memberState.view.phone;
-      formik.values.grade = memberState.view.grade;
-      formik.values.graduation = memberState.view.graduation;
-      setInit(true);
-    }
-  }, [memberState, formik, id, init]);
 
   return (
     <div className="app-wrapper">
       <div className="dashboard animated slideInUpTiny animation-duration-3">
-
-        <div className={classes.actionTop}>
-          <PrivateLink roles={[]} to="/member">
+        <PageHead>
+          <Link to="/member">
             <Button
               color="primary"
               variant="contained"
               startIcon={<ListIcon />}>
               List
             </Button>
-          </PrivateLink>
-        </div>
-
-        {memberState.view &&
-          <>
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <div className={classes.head}>
-                  {memberState.view.first_name} {memberState.view.last_name}
-                </div>
-              </AccordionSummary>
-              <AccordionDetails>
-                <div className={classes.space}>
-                  <div className="row">
-                    <div className="col-md-6 col-sm-12">
-                      <div className={classes.space}>
-                        <FormikSelect formik={formik} options={['student', 'faculty']} name="group" label="Group" />
-                        <FormikInput formik={formik} name="first_name" label="First Name" variant="outlined" fullWidth />
-                        <FormikInput formik={formik} name="last_name" label="Last Name" variant="outlined" fullWidth />
-                        <FormikInput formik={formik} name="address" label="Address" variant="outlined" fullWidth />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-12">
-                      <div className={classes.space}>
-                        <FormikInput formik={formik} name="email" label="Email" variant="outlined" fullWidth />
-                        <FormikInput formik={formik} name="phone" label="Phone" variant="outlined" fullWidth />
-                        <FormikInput formik={formik} name="grade" label="Grade" variant="outlined" fullWidth />
-                        <FormikInput formik={formik} name="graduation" label="Graduation" variant="outlined" fullWidth />
-                      </div>
-                    </div>
-                  </div>
-                  <Button variant="outlined" color="primary" onClick={formik.submitForm}>
-                    Update
-                  </Button>
-                </div>
-              </AccordionDetails>
-            </Accordion>
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <div className={classes.head}>
-                  Vehicles
-                </div>
-              </AccordionSummary>
-              <AccordionDetails>
-                <div className={classes.space}>
-                  {memberState.view.vehicles.map(vehicle =>
-                    <PrivateLink roles={[]} to={`/vehicle/view/${vehicle.id}`} key={vehicle.id}>
-                      <div className="text-uppercase">{vehicle.plate}</div>
-                    </PrivateLink>
-                  )}
-                </div>
-              </AccordionDetails>
-            </Accordion>
-          </>
-        }
-
+          </Link>
+        </PageHead>
+        <Paper>
+          <StatusBox
+            height={200}
+            padding={0}
+            type="circle"
+            status={memberView.isLoading ? 'wait' : memberView.data === null ? 'empty' : ''}
+          >
+            {memberView.data &&
+              <div>
+                <List>
+                  <ListItem button onClick={() => setMemberOpen(!memberOpen)}>
+                    <ListItemIcon>
+                      {memberOpen? <ExpandMoreIcon/> : <ChevronRightIcon />}
+                    </ListItemIcon>
+                    <ListItemText>
+                      {memberView.data.first_name} {memberView.data.last_name}
+                    </ListItemText>
+                  </ListItem>
+                  <Collapse in={memberOpen}>
+                    <ListItem>
+                      <ListItemIcon></ListItemIcon>
+                      <ListItemText>
+                        <form className={classes.space} onSubmit={handleSubmit(onSubmit)}>
+                          <Controller
+                            fullWidth
+                            select
+                            variant="outlined"
+                            size="small"
+                            label="Group"
+                            name="group"
+                            as={TextField}
+                            defaultValue={memberView.data.group}
+                            error={!!errors.group}
+                            helperText={errors.group && <span>This field is required</span>}
+                            control={control}
+                            rules={{ required: true }}
+                          >
+                            <MenuItem value="student">Student</MenuItem>
+                            <MenuItem value="faculty">Faculty</MenuItem>
+                          </Controller>
+                          <Controller
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            label="First Name"
+                            name="first_name"
+                            as={TextField}
+                            defaultValue={memberView.data.first_name}
+                            error={!!errors.first_name}
+                            helperText={errors.first_name && <span>This field is required</span>}
+                            control={control}
+                            rules={{ required: true }}
+                          />
+                          <Controller
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            label="Last Name"
+                            name="last_name"
+                            as={TextField}
+                            defaultValue={memberView.data.last_name}
+                            error={!!errors.last_name}
+                            helperText={errors.last_name && <span>This field is required</span>}
+                            control={control}
+                            rules={{ required: true }}
+                          />
+                          <Controller
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            label="Address"
+                            name="address"
+                            as={TextField}
+                            defaultValue={memberView.data.address}
+                            error={!!errors.address}
+                            helperText={errors.address && <span>This field is required</span>}
+                            control={control}
+                            rules={{ required: true }}
+                          />
+                          <Controller
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            label="Email"
+                            name="email"
+                            as={TextField}
+                            defaultValue={memberView.data.email}
+                            error={!!errors.email}
+                            helperText={errors.email && <span>This field is required</span>}
+                            control={control}
+                            rules={{ required: true }}
+                          />
+                          <Controller
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            label="Phone"
+                            name="phone"
+                            as={TextField}
+                            defaultValue={memberView.data.phone}
+                            error={!!errors.phone}
+                            helperText={errors.phone && <span>This field is required</span>}
+                            control={control}
+                            rules={{ required: true }}
+                          />
+                          <Controller
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            label="Grade"
+                            name="grade"
+                            as={TextField}
+                            defaultValue={memberView.data.grade}
+                            error={!!errors.grade}
+                            helperText={errors.grade && <span>This field is required</span>}
+                            control={control}
+                            rules={{ required: true }}
+                          />
+                          <Controller
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            label="Graduation"
+                            name="graduation"
+                            as={TextField}
+                            defaultValue={memberView.data.graduation}
+                            error={!!errors.graduation}
+                            helperText={errors.graduation && <span>This field is required</span>}
+                            control={control}
+                            rules={{ required: true }}
+                          />
+                          <Button
+                            disabled={memberView.isUpdating}
+                            fullWidth
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                          >
+                            update
+                          </Button>
+                        </form>
+                      </ListItemText>
+                    </ListItem>
+                  </Collapse>
+                  <Divider />
+                  <ListItem button onClick={() => setVehiclesOpen(!vehiclesOpen)}>
+                    <ListItemIcon>
+                      {vehiclesOpen? <ExpandMoreIcon/> : <ChevronRightIcon />}
+                    </ListItemIcon>
+                    <ListItemText>
+                      Vehicles
+                    </ListItemText>
+                  </ListItem>
+                  <Collapse in={vehiclesOpen}>
+                    <ListItem>
+                      <ListItemIcon></ListItemIcon>
+                      <ListItemText>
+                        <StatusBox
+                          height={100}
+                          padding={0}
+                          status={memberView.data.vehicles.length === 0 ? 'empty' : ''}
+                        >
+                          <div className={classes.space}>
+                            {memberView.data.vehicles.map(vehicle =>
+                              <Link to={`/vehicle/view/${vehicle.id}`} key={vehicle.id}>
+                                <div className="text-uppercase">{vehicle.plate}</div>
+                              </Link>
+                            )}
+                          </div>
+                        </StatusBox>
+                      </ListItemText>
+                    </ListItem>
+                  </Collapse>
+                </List>
+              </div>
+            }
+          </StatusBox>
+        </Paper>
       </div>
     </div>
   );

@@ -1,72 +1,155 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import { Button, Backdrop } from "@material-ui/core";
+import React, { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { Button, List, ListItem, ListItemIcon, ListItemText, Divider, Paper, Collapse } from "@material-ui/core";
 import ListIcon from '@material-ui/icons/List';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import PrivateLink from "components/link/private";
-import vehicleActions from "store/school/vehicle/actions";
-import Plate from "./plate";
-import Visit from "./visit";
-import Flag from "./flag";
-import VehicleMember from "./member";
-
-const useStyles = makeStyles({
-  actionTop: {
-    marginBottom: 16,
-    textAlign: 'right',
-    '& > *+*': {
-      marginLeft: 8
-    }
-  },
-  backdrop: {
-    zIndex: 100,
-    color: '#fff',
-  },
-});
-
-const useEffectOnce = func => useEffect(func, []);
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import api from "containers/api";
+import PageHead from "components/_custom/pageHead";
+import StatusBox from "components/_custom/statusBox";
+import vehicleViewAtom from "atoms/vehicleView";
+import { useEffectOnlyOnce } from "util/custom";
+import VehicleInfo from "./vehicleInfo";
+import MemberInfo from "./memberInfo";
+import VisitHistory from "./visitHistory";
+import FlagHistory from "./flagHistory";
 
 const VehicleView = () => {
 
-  const classes = useStyles();
-  const dispatch = useDispatch();
-  const vehicleState = useSelector(state => state.School.Vehicle);
   const { id } = useParams();
+  const [vehicleView, setVehicleView] = useRecoilState(vehicleViewAtom);
+  const [vehicleOpen, setVehicleOpen] = useState(true);
+  const [memberOpen, setMemberOpen] = useState(false);
+  const [visitOpen, setVisitOpen] = useState(false);
+  const [flagOpen, setFlagOpen] = useState(false);
 
-  useEffectOnce(() => {
-    dispatch(vehicleActions.view({ id }));
+  useEffectOnlyOnce(() => {
+    const load = async () => {
+      setVehicleView({
+        ...vehicleView,
+        isLoading: true
+      });
+      const response = await api.post('/vehicle/view', { id });
+      if (response) {
+        setVehicleView({
+          ...vehicleView,
+          isLoading: false,
+          data: response.data
+        });
+      } else {
+        setVehicleView({
+          ...vehicleView,
+          isLoading: false
+        });
+      }
+    };
+    load();
   });
 
   return (
     <div className="app-wrapper">
       <div className="dashboard animated slideInUpTiny animation-duration-3">
-
-        <div className={classes.actionTop}>
-          <PrivateLink roles={[]} to="/vehicle">
+        <PageHead>
+          <Link to="/vehicle">
             <Button
               color="primary"
               variant="contained"
               startIcon={<ListIcon />}>
               List
             </Button>
-          </PrivateLink>
-        </div>
-
-        {vehicleState.view &&
+          </Link>
+        </PageHead>
+        <Paper>
+          <StatusBox
+            height={200}
+            padding={0}
+            type="circle"
+            status={vehicleView.isLoading ? 'wait' : vehicleView.data === null ? 'empty' : ''}
+          >
+            {vehicleView.data &&
+              <div>
+                <List>
+                  <ListItem button onClick={() => setVehicleOpen(!vehicleOpen)}>
+                    <ListItemIcon>
+                      {vehicleOpen? <ExpandMoreIcon/> : <ChevronRightIcon />}
+                    </ListItemIcon>
+                    <ListItemText>
+                      Vehicle
+                    </ListItemText>
+                  </ListItem>
+                  <Collapse in={vehicleOpen}>
+                    <ListItem>
+                      <ListItemIcon></ListItemIcon>
+                      <ListItemText>
+                        <VehicleInfo vehicle={vehicleView.data} />
+                      </ListItemText>
+                    </ListItem>
+                  </Collapse>
+                  <Divider />
+                  <ListItem button onClick={() => setMemberOpen(!memberOpen)}>
+                    <ListItemIcon>
+                      {memberOpen? <ExpandMoreIcon/> : <ChevronRightIcon />}
+                    </ListItemIcon>
+                    <ListItemText>
+                      Member Information
+                    </ListItemText>
+                  </ListItem>
+                  <Collapse in={memberOpen}>
+                    <ListItem>
+                      <ListItemIcon></ListItemIcon>
+                      <ListItemText>
+                        <MemberInfo member={vehicleView.data.member} />
+                      </ListItemText>
+                    </ListItem>
+                  </Collapse>
+                  <Divider />
+                  <ListItem button onClick={() => setVisitOpen(!visitOpen)}>
+                    <ListItemIcon>
+                      {visitOpen? <ExpandMoreIcon/> : <ChevronRightIcon />}
+                    </ListItemIcon>
+                    <ListItemText>
+                      Visit History
+                    </ListItemText>
+                  </ListItem>
+                  <Collapse in={visitOpen}>
+                    <ListItem>
+                      <ListItemIcon></ListItemIcon>
+                      <ListItemText>
+                        <VisitHistory records={vehicleView.data.records} />
+                      </ListItemText>
+                    </ListItem>
+                  </Collapse>
+                  <Divider />
+                  <ListItem button onClick={() => setFlagOpen(!flagOpen)}>
+                    <ListItemIcon>
+                      {flagOpen? <ExpandMoreIcon/> : <ChevronRightIcon />}
+                    </ListItemIcon>
+                    <ListItemText>
+                      Flag History
+                    </ListItemText>
+                  </ListItem>
+                  <Collapse in={flagOpen}>
+                    <ListItem>
+                      <ListItemIcon></ListItemIcon>
+                      <ListItemText>
+                        <FlagHistory />
+                      </ListItemText>
+                    </ListItem>
+                  </Collapse>
+                </List>
+              </div>
+            }
+          </StatusBox>
+        </Paper>
+        {/* {vehicleState.view &&
           <>
             <Plate vehicle={vehicleState.view} />
             <Visit records={vehicleState.view.records} />
             <Flag vehicle={vehicleState.view} />
             <VehicleMember member={vehicleState.view.member} />
           </>
-        }
-
-        <Backdrop className={classes.backdrop} open={vehicleState.action === vehicleActions.VIEW_REQUEST}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-
+        } */}
       </div>
     </div>
   );

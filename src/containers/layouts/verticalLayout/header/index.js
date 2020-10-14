@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, matchPath } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 import classnames from 'classnames';
 import { makeStyles } from "@material-ui/core/styles";
 import { AppBar, Toolbar, IconButton, Menu, MenuItem } from "@material-ui/core";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import layoutActions from "store/layout/actions";
+import authAtom from "atoms/auth";
+import navAtom from "atoms/nav";
 
 const useStyles = makeStyles({
   pageTitle: {
@@ -25,15 +26,15 @@ const useStyles = makeStyles({
 const Header = () => {
 
   const classes = useStyles();
-  const dispatch = useDispatch();
   const location = useLocation();
-  const layoutState = useSelector(state => state.Layout);
+  const auth = useRecoilValue(authAtom);
+  const setNav = useSetRecoilState(navAtom);
   const [pageTitle, setPageTitle] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
 
   useEffect(() => {
-    let matched = layoutState.routes.filter(route => {
+    let matched = auth.routes.filter(route => {
       return matchPath(location.pathname, {
         path: route.path,
         exact: true,
@@ -46,20 +47,13 @@ const Header = () => {
       setPageTitle('');
       document.title = 'Plateverify';
     }
-  }, [location.pathname, layoutState.routes]);
+  }, [location.pathname, auth.routes]);
 
-  const onToggleCollapsedNav = (e) => {
-    const val = !layoutState.navCollapsed;
-    dispatch(layoutActions.toggleNav(val));
-  };
+  const showNav = () => setNav({ open: true });
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const handleMenuClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
     handleMenuClose();
@@ -73,7 +67,8 @@ const Header = () => {
         <IconButton
           className="jr-menu-icon mr-3 d-block d-md-none"
           aria-label="Menu"
-          onClick={onToggleCollapsedNav}>
+          onClick={showNav}
+        >
           <span className="menu-icon"/>
         </IconButton>
         <Link className={classnames('d-block', classes.pageTitle)} to="/">
@@ -105,6 +100,5 @@ const Header = () => {
     </AppBar>
   );
 };
-
 
 export default Header;

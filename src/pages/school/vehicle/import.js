@@ -1,41 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button } from "@material-ui/core";
 import Alert from '@material-ui/lab/Alert';
 import ListIcon from '@material-ui/icons/List';
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import classnames from "classnames";
-import PrivateLink from "components/link/private";
-import FormikSelect from "components/formik/formikSelect";
 import Dropzone from "components/dropzone/dropzone";
-import vehicleActions from "store/school/vehicle/actions";
-
-const validationSchema = Yup.object().shape({
-  plate : Yup.string().required('Required'),
-  make  : Yup.string().required('Required'),
-  model : Yup.string().required('Required'),
-  body  : Yup.string().required('Required'),
-  color : Yup.string().required('Required'),
-});
-
-const useEffectOnce = func => useEffect(func, []);
+import PageHead from "components/_custom/pageHead";
+import StatusBox from "components/_custom/statusBox";
+import FormSelect from "components/_custom/formSelect";
+import api from "containers/api";
 
 const useStyles = makeStyles({
-  actionTop: {
-    marginBottom: 16,
-    textAlign: 'right',
-    '& > *+*': {
-      marginLeft: 8
-    }
-  },
-  head: {
-    '& .MuiTableCell-head': {
-      color: '#3f51b5 !important'
-    }
-  },
-  box: {
+  padding: {
     padding: 16
   },
   space: {
@@ -52,45 +29,30 @@ const useStyles = makeStyles({
 const VehicleImport = () => {
 
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const vehicleState = useSelector(state => state.School.Vehicle);
-  const options = vehicleState.parsed? vehicleState.parsed.meta.fields : [];
+  const { control, handleSubmit, errors, reset, setValue } = useForm();
   const [file, setFile] = useState(null);
-
-  console.log(vehicleState);
-
-  useEffectOnce(() => {
-    dispatch({ type: vehicleActions.PARSE_CLEAR });
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      plate: '',
-      make: '',
-      model: '',
-      body: '',
-      color: '',
-    },
-    validationSchema,
-    onSubmit: values => {
-      let data = new FormData();
-      data.append('file', file);
-      data.append('plate', values.plate);
-      data.append('make', values.make);
-      data.append('model', values.model);
-      data.append('body', values.body);
-      data.append('color', values.color);
-      dispatch(vehicleActions.upload(data));
+  const [isParsing, setIsParsing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [parsed, setParsed] = useState(null);
+  const [failed, setFailed] = useState(null);
+  const options = parsed? parsed.meta.fields : [];
+  const formStatus = (isParsing || isUploading) ? 'wait' : !parsed ? 'empty' : '';
+  const onSubmit = async values => {
+    let data = new FormData();
+    data.append('file', file);
+    data.append('plate', values.plate);
+    data.append('make', values.make);
+    data.append('model', values.model);
+    data.append('body', values.body);
+    data.append('color', values.color);
+    
+    setIsUploading(true);
+    const response = await api.post('/vehicle/import', data);
+    if (response) {
+      setFailed(response.data.failed);
     }
-  });
-
-  const clearForm = () => {
-    formik.values.plate = '';
-    formik.values.make = '';
-    formik.values.model = '';
-    formik.values.body = '';
-    formik.values.color = '';
-  }
+    setIsUploading(false);
+  };
 
   const autoMap = () => {
     const last = options[options.length-1];
@@ -99,38 +61,46 @@ const VehicleImport = () => {
       'make',
       'model',
       'body',
-      'color',
+      'color'
     ];
-    
     for (let i = 0; i < fields.length; i++) {
-      formik.setFieldValue(fields[i], options[i] || last);
+      setValue(fields[i], options[i] || last);
     }
-  }
+  };
 
-  const handleParse = files => {
+  const handleParse = async files => {
     setFile(files[0]);
-    clearForm();
     let data = new FormData();
     data.append('type', 'parse');
     data.append('file', files[0]);
-    dispatch(vehicleActions.parse(data));
+    
+    reset();
+    setIsParsing(true);
+    setParsed(null);
+    setFailed(null);
+    const response = await api.post('/vehicle/parse', data);
+    if (response) {
+      setParsed(response.data);
+    }
+    setIsParsing(false);
   };
 
   return (
     <div className="app-wrapper">
       <div className="dashboard animated slideInUpTiny animation-duration-3">
-        <div className={classes.actionTop}>
-          <PrivateLink roles={[]} to="/vehicle">
+        <PageHead>
+          <Link to="/vehicle">
             <Button
               color="primary"
               variant="contained"
-              startIcon={<ListIcon />}>
+              startIcon={<ListIcon />}
+            >
               List
             </Button>
-          </PrivateLink>
-        </div>
-        <Paper className={classes.root}>
-          <div className={classnames(classes.box, classes.space)}>
+          </Link>
+        </PageHead>
+        <Paper>
+          <div className={classes.padding}>
             <Dropzone onDrop={handleParse}>
               {file
                 ?<>
@@ -140,57 +110,95 @@ const VehicleImport = () => {
                 :<div>Drag 'n' drop some files here, or click to select files</div>
               }
             </Dropzone>
-
-            {vehicleState.parsed &&
-              <form className={classes.space}>
+          </div>
+          <StatusBox height={100} type="line" status={formStatus}>
+            <div className={classes.space}>
+              {parsed &&
+                <Alert variant="outlined" severity="info">
+                  Total Rows: {parsed.data.length}
+                </Alert>
+              }
+              {failed && failed.length > 0 &&
+                <Alert severity="error">
+                  Count of Failed Rows: {failed.length}
+                </Alert>
+              }
+              {failed && failed.length === 0 &&
+                <Alert severity="success">Success</Alert>
+              }
+              <form className={classes.space} onSubmit={handleSubmit(onSubmit)}>
+                <FormSelect
+                  label="Select Plate"
+                  name="plate"
+                  defaultValue=""
+                  error={!!errors.plate}
+                  helperText={errors.plate && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
+                <FormSelect
+                  label="Select Make"
+                  name="make"
+                  defaultValue=""
+                  error={!!errors.make}
+                  helperText={errors.make && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
+                <FormSelect
+                  label="Select Model"
+                  name="model"
+                  defaultValue=""
+                  error={!!errors.model}
+                  helperText={errors.model && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
+                <FormSelect
+                  label="Select Body"
+                  name="body"
+                  defaultValue=""
+                  error={!!errors.body}
+                  helperText={errors.body && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
+                <FormSelect
+                  label="Select Color"
+                  name="color"
+                  defaultValue=""
+                  error={!!errors.color}
+                  helperText={errors.color && <span>This field is required</span>}
+                  control={control}
+                  rules={{ required: true }}
+                  options={options}
+                />
                 <Button
-                  onClick={autoMap}
+                  disabled={isUploading}
+                  fullWidth
                   variant="outlined"
-                  color="primary">
-                  Auto Map
+                  size="large"
+                  onClick={autoMap}
+                >
+                  auto map
                 </Button>
-                <div className="row">
-                  <div className="col-md-6 col-sm-12">
-                    <div className={classes.space}>
-                      <FormikSelect formik={formik} options={options} name="plate" label="Plate" />
-                      <FormikSelect formik={formik} options={options} name="make" label="Vehicle Make" />
-                      <FormikSelect formik={formik} options={options} name="model" label="Vehicle Model" />
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-12">
-                    <div className={classes.space}>
-                      <FormikSelect formik={formik} options={options} name="body" label="Vehicle Body Type" />
-                      <FormikSelect formik={formik} options={options} name="color" label="Vehicle Color" />
-                    </div>
-                  </div>
-                </div>
                 <Button
-                  onClick={formik.submitForm}
+                  disabled={isUploading}
+                  fullWidth
+                  type="submit"
                   variant="contained"
                   color="primary"
-                  fullWidth>
-                  Start Import
+                  size="large"
+                >
+                  upload
                 </Button>
               </form>
-            }
-            
-            {vehicleState.action === vehicleActions.UPLOAD_FAILURE &&
-              <Alert severity="error">Incomplete</Alert>
-            }
-
-            {vehicleState.action === vehicleActions.UPLOAD_SUCCESS &&
-              <div className={classes.space}>
-                <Alert severity="success">
-                  Total Rows: {vehicleState.parsed.data.length}
-                </Alert>
-                {vehicleState.failed.length > 0 &&
-                  <Alert severity="error">
-                    Failed Rows: {vehicleState.failed.length}
-                  </Alert>
-                }
-              </div>
-            }
-          </div>
+            </div>
+          </StatusBox>
         </Paper>
       </div>
     </div>

@@ -1,67 +1,67 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
-import { Paper, Button } from "@material-ui/core";
-import settingActions from "store/school/setting/actions";
-import Alert from "./alert";
-
-const useStyles = makeStyles({
-  title: {
-    fontSize: 24,
-    padding: 16
-  },
-  getStarted: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 200,
-  },
-  actionTop: {
-    marginBottom: 16,
-    textAlign: 'right',
-    '& > *+*': {
-      marginLeft: 8
-    }
-  }
-});
-
-const useEffectOnce = func => useEffect(func, []);
+import React from "react";
+import { useRecoilState } from "recoil";
+import { Paper, List, ListItem, ListItemText, Divider } from "@material-ui/core";
+import settingAtom from "atoms/settingAtom";
+import api from "containers/api";
+import StatusBox from "components/_custom/statusBox";
+import { useEffectOnlyOnce } from "util/custom";
+import AlertBox from "./alertBox";
 
 const Setting = () => {
 
-  const classes = useStyles();
-  const dispatch = useDispatch();
-  const settingState = useSelector(state => state.School.Setting);
-  const alert = settingState.settings.filter(setting => setting.category === 'alert')[0];
+  const [setting, setSetting] = useRecoilState(settingAtom);
 
-  useEffectOnce(() => {
-    if (settingState.settings.length === 0) {
-      dispatch(settingActions.get());
+  useEffectOnlyOnce(() => {
+    if (!setting.init) {
+      const load = async () => {
+        setSetting({
+          ...setting,
+          isLoading: true
+        });
+        const response = await api.post('/setting/all');
+        if (response) {
+          setSetting({
+            ...setting,
+            init: true,
+            isLoading: false,
+            alert: response.data.filter(item => item.category === 'alert')[0] || null
+          });
+        } else {
+          setSetting({
+            ...setting,
+            isLoading: false
+          });
+        }
+      };
+      load();
     }
   });
-
-  const handleGetStarted = () => {
-    dispatch(settingActions.start({
-      category: 'alert'
-    }));
-  };
 
   return (
     <div className="app-wrapper">
       <div className="dashboard animated slideInUpTiny animation-duration-3">
-        <Paper>
-          <div className={classes.title}>
-            Alert
-          </div>
-          {settingState.action === settingActions.GET_SUCCESS && alert === undefined &&
-            <div className={classes.getStarted}>
-              <Button color="primary" variant="contained" onClick={handleGetStarted}>
-                Get started
-              </Button>
-            </div>
-          }
-          {alert && <Alert alert={alert} /> }
-        </Paper>
+        <StatusBox
+          height={300}
+          padding={0}
+          type="circle"
+          status={!setting.init || setting.isLoading? 'wait' : ''}
+        >
+          <Paper>
+            <List>
+              <ListItem>
+                <ListItemText>
+                  Alert Recipients
+                </ListItemText>
+              </ListItem>
+              <Divider />
+              <ListItem>
+                <ListItemText>
+                  <AlertBox />
+                </ListItemText>
+              </ListItem>
+            </List>
+          </Paper>
+        </StatusBox>
       </div>
     </div>
   );

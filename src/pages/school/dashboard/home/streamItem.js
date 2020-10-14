@@ -1,5 +1,5 @@
 import React from "react";
-import PrivateLink from "components/link/private";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import * as moment from "moment";
 import classnames from "classnames";
@@ -70,9 +70,9 @@ const StreamItem = ({ record }) => {
             </div>
           </div>
           <p className="text-primary mt-auto mb-0 pointer">
-            <PrivateLink roles={[]} to={`/dashboard/${record.id}`}>
+            <Link to={`/dashboard/${record.id}`}>
               <span>Detail</span>
-            </PrivateLink>
+            </Link>
           </p>
         </div>
 

@@ -1,5 +1,3 @@
-import slugify from "slugify";
-
 import Login from 'pages/auth/login';
 import SchoolDashboard     from 'pages/school/dashboard/home/home';
 import SchoolDashboardView from 'pages/school/dashboard/view/view';
@@ -15,80 +13,80 @@ import SchoolVehicleImport from 'pages/school/vehicle/import';
 import SchoolSetting       from 'pages/school/setting/setting';
 import AdminBackup         from 'pages/admin/backup';
 
-const routeGenerator = (prefix) => [
+const routeGenerator = () => [
   {
     path: '/login',
     roles: ['NO_ROLE'],
     component: Login
   },
   {
-    path: `/${prefix}/dashboard`,
+    path: '/dashboard',
     roles: ['ROLE_SCOPE_SCHOOL'],
     pageTitle: 'Campus Dashboard',
     component: SchoolDashboard
   },
   {
-    path: `/${prefix}/dashboard/:id`,
+    path: '/dashboard/:id',
     roles: ['ROLE_SCOPE_SCHOOL'],
     pageTitle: 'Vehicle Detail',
     component: SchoolDashboardView
   },
   {
-    path: `/${prefix}/alert`,
+    path: '/alert',
     roles: ['ROLE_SCOPE_SCHOOL'],
     pageTitle: 'Alerts',
     component: SchoolAlertList
   },
   {
-    path: `/${prefix}/alert/:id`,
+    path: '/alert/:id',
     roles: ['ROLE_SCOPE_SCHOOL', 'ROLE_MANAGE_ALL'],
     pageTitle: 'Alerts',
     component: SchoolAlertView
   },
   {
-    path: `/${prefix}/offender`,
+    path: '/offender',
     roles: ['ROLE_SCOPE_SCHOOL'],
     pageTitle: 'Offenders',
     component: SchoolOffenderList
   },
   {
-    path: `/${prefix}/member`,
+    path: '/member',
     roles: ['ROLE_SCOPE_SCHOOL'],
     pageTitle: 'Members',
     component: SchoolMemberList
   },
   {
-    path: `/${prefix}/member/view/:id`,
+    path: '/member/view/:id',
     roles: ['ROLE_SCOPE_SCHOOL', 'ROLE_MANAGE_ALL'],
     pageTitle: 'Members',
     component: SchoolMemberView
   },
   {
-    path: `/${prefix}/member/import`,
+    path: '/member/import',
     roles: ['ROLE_SCOPE_SCHOOL', 'ROLE_MANAGE_ALL'],
     pageTitle: 'Import Members',
     component: SchoolMemberImport
   },
   {
-    path: `/${prefix}/vehicle`,
+    path: '/vehicle',
     roles: ['ROLE_SCOPE_SCHOOL'],
     pageTitle: 'Vehicles',
     component: SchoolVehicleList
   },
   {
-    path: `/${prefix}/vehicle/view/:id`,
+    path: '/vehicle/view/:id',
     roles: ['ROLE_SCOPE_SCHOOL', 'ROLE_MANAGE_ALL'],
     pageTitle: 'Vehicles',
     component: SchoolVehicleView
   },
   {
-    path: `/${prefix}/vehicle/import`,
+    path: '/vehicle/import',
     roles: ['ROLE_SCOPE_SCHOOL', 'ROLE_MANAGE_ALL'],
     pageTitle: 'Import Vehicles',
     component: SchoolVehicleImport
   },
   {
-    path: `/${prefix}/setting`,
+    path: '/setting',
     roles: ['ROLE_SCOPE_SCHOOL', 'ROLE_MANAGE_ALL'],
     pageTitle: 'Settings',
     component: SchoolSetting
@@ -103,27 +101,15 @@ const routeGenerator = (prefix) => [
 
 const builder = (user) => {
   let finalRoutes = [];
-
+  const routes = routeGenerator();
   if (user) {
-
-    let prefix;
-    if (user.roles.includes('ROLE_SCOPE_PLATEVERIFY')) {
-      prefix = 'ppt';
-    } else {
-      prefix = slugify(user.school.name, { replacement: '-', lower: true });
-    }
-
-    const routes = routeGenerator(prefix);
     finalRoutes = routes.filter(route => {
       let merged = [...new Set([...user.roles, ...route.roles])];
       return merged.length === user.roles.length;
     });
-
   } else {
-    const routes = routeGenerator('');
     finalRoutes = [routes[0]];
   }
-
   return finalRoutes;
 }
 

@@ -59,7 +59,6 @@ export default (state = initialState, action) => {
         }
         return setting;
       });
-      console.log(settings);
       return {
         ...baseState,
         settings,

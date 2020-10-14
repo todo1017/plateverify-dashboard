@@ -1,61 +1,55 @@
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, Switch, Route, Redirect } from 'react-router-dom';
-import authAction from 'store/auth/actions';
-import layoutAction from 'store/layout/actions';
-import AuthLayout from "containers/layouts/authLayout";
-import AdminLayout from "containers/layouts/adminLayout";
-import SchoolLayout from "containers/layouts/schoolLayout";
+import { useRecoilState } from "recoil";
+import authState from "atoms/auth";
 import LoadScreen from 'pages/auth/loadScreen';
+import api from "./api";
 import routeBuilder from './routeBuilder';
+import layoutBuilder from "./layoutBuilder";
 
 const useEffectOnlyOnce = (func) => useEffect(func, []);
-let FinalLayout = null;
-let finalRoutes = null;
+let Layout = null;
+let routes = null;
 
 const App = () => {
-  const authState = useSelector(state => state.Auth);
+
   const history = useHistory();
-  const dispatch = useDispatch();
+  const [auth, setAuth] = useRecoilState(authState);
 
   useEffectOnlyOnce(() => {
-    dispatch(authAction.verifyToken());
+    const verifyToken = async () => {
+      const response = await api.post('/auth/check');
+      const user = response? response.data.user : null;
+      Layout = layoutBuilder(user);
+      routes = routeBuilder(user);
+      if (!user) {
+        history.push('/login');
+      } else {
+        if (user.school) {
+          document.body.classList.add('dark-indigo');
+        } else {
+          document.body.classList.add('dark-green');
+        }
+      }
+      setAuth({ init: true, user, routes });
+    };
+    verifyToken();
   });
 
-  useEffect(() => {
-    if (authState.action === authAction.TOKEN_FAILURE) {
-      FinalLayout = AuthLayout;
-      finalRoutes = routeBuilder(authState.user);
-      history.push('/login');
-    }
-
-    if (authState.action === authAction.TOKEN_SUCCESS) {
-      if (!authState.user.school) {
-        FinalLayout = AdminLayout;
-        document.body.classList.add('dark-green');
-      } else {
-        FinalLayout = SchoolLayout;
-        document.body.classList.add('dark-indigo');
-      }
-      finalRoutes = routeBuilder(authState.user);
-      dispatch(layoutAction.registerRoutes(finalRoutes));
-    }
-  }, [authState, history, dispatch]);
-
-  if (FinalLayout && finalRoutes) {
+  if (auth.init) {
     return (
-      <FinalLayout>
+      <Layout>
         <Switch>
-          {finalRoutes.map(route =>
+          {routes.map(route =>
             <Route path={route.path} exact key={route.path}>
               <route.component />
             </Route>
           )}
           <Route path="*">
-            <Redirect to={finalRoutes[0].path} />
+            <Redirect to={routes[0].path} />
           </Route>
         </Switch>
-      </FinalLayout>
+      </Layout>
     );
   }
 

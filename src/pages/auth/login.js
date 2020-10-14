@@ -1,11 +1,10 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { Button } from "@material-ui/core";
+import { useRecoilState } from "recoil";
+import { useForm, Controller } from "react-hook-form";
+import { Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import authAction from "store/auth/actions";
-import FormikInput from "components/formik/formikInput";
+import authState from "atoms/auth";
+import api from "containers/api";
 
 const useStyles = makeStyles(theme  => ({
   root: {
@@ -64,27 +63,20 @@ const useStyles = makeStyles(theme  => ({
   }
 }));
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().required('Required'),
-  password: Yup.string().required('Required'),
-});
-
 const Login = () => {
 
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const authState = useSelector(state => state.Auth);
-
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-    },
-    validationSchema,
-    onSubmit: values => {
-      dispatch(authAction.verifyLogin(values));
+  const [auth, setAuth] = useRecoilState(authState);
+  const { control, handleSubmit, errors } = useForm();
+  const onSubmit = async data => {
+    setAuth({ ...auth, loginChecking: true });
+    const response = await api.post('/auth/login', data);
+    setAuth({ ...auth, loginChecking: false });
+    if (response) {
+      localStorage.setItem('token', response.data.token);
+      window.location.href = '/';
     }
-  });
+  };
 
   return (
     <div className={classes.root}>
@@ -98,27 +90,40 @@ const Login = () => {
             Perimeter Protection Technologies
           </div>
         </div>
-        <form className={classes.space} onSubmit={formik.handleSubmit}>
-          <FormikInput
-            formik={formik}
-            name="email"
-            label="Email"
+        <form className={classes.space} onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            fullWidth
             variant="outlined"
-            fullWidth />
-          <FormikInput
-            formik={formik}
-            name="password"
+            label="Email"
+            name="email"
+            defaultValue=""
+            as={TextField}
+            error={!!errors.email}
+            helperText={errors.email && <span>This field is required</span>}
+            control={control}
+            rules={{ required: true }}
+          />
+          <Controller
+            fullWidth
+            variant="outlined"
             label="Password"
             type="password"
-            variant="outlined"
-            fullWidth />
+            name="password"
+            defaultValue=""
+            as={TextField}
+            error={!!errors.password}
+            helperText={errors.password && <span>This field is required</span>}
+            control={control}
+            rules={{ required: true }}
+          />
           <Button
-            disabled={authState.action === authAction.TOKEN_REQUEST}
+            disabled={auth.loginChecking}
+            fullWidth
             type="submit"
             variant="contained"
             color="primary"
             size="large"
-            fullWidth>
+          >
             Login
           </Button>
         </form>

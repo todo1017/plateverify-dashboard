@@ -259,7 +259,8 @@ $link-hover-dark-deep-purple: $white;
     &:focus,
     &:hover,
     &.active {
-      background-color: $sidebar-darken-deep-purple;
+      background-color: $app-primary-dark-deep-purple;
+      // background-color: $sidebar-darken-deep-purple;
       color: $link-hover-dark-deep-purple;
     }
   }

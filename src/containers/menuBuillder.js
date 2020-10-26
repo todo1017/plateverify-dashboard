@@ -4,6 +4,7 @@ import PetsIcon from '@material-ui/icons/Pets';
 import GroupIcon from '@material-ui/icons/Group';
 import DriveEtaIcon from '@material-ui/icons/DriveEta';
 import SettingsIcon from '@material-ui/icons/Settings';
+import BusinessIcon from '@material-ui/icons/Business';
 import BackupIcon from '@material-ui/icons/Backup';
 
 const menuGenerator = () => [
@@ -54,21 +55,44 @@ const menuGenerator = () => [
         type: 'item',
         Icon: SettingsIcon,
         link: '/setting',
-        roles: ['ROLE_MANAGE_ALL'],
       }
     ]
   },
   {
-    name: 'Temporary',
+    name: 'Management',
     type: 'section',
     roles: ['ROLE_SCOPE_PLATEVERIFY'],
     children: [
       {
-        name: 'Backup',
+        name: 'School',
+        type: 'item',
+        Icon: BusinessIcon,
+        link: '/admin/school'
+      },
+      {
+        name: 'User',
+        type: 'item',
+        Icon: GroupIcon,
+        link: '/admin/user'
+      },
+      {
+        name: 'Offender',
+        type: 'item',
+        Icon: PetsIcon,
+        link: '/admin/offender'
+      }
+    ]
+  },
+  {
+    name: 'Migration',
+    type: 'section',
+    roles: ['ROLE_SCOPE_PLATEVERIFY'],
+    children: [
+      {
+        name: 'Migration',
         type: 'item',
         Icon: BackupIcon,
-        link: '/admin/backup',
-        roles: ['ROLE_SCOPE_PLATEVERIFY', 'ROLE_MANAGE_ALL'],
+        link: '/admin/migration',
       }
     ]
   }

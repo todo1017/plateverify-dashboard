@@ -11,7 +11,12 @@ import SchoolVehicleList   from 'pages/school/vehicle/list';
 import SchoolVehicleView   from 'pages/school/vehicle/view/view';
 import SchoolVehicleImport from 'pages/school/vehicle/import';
 import SchoolSetting       from 'pages/school/setting/setting';
-import AdminBackup         from 'pages/admin/backup';
+import AdminSchoolList     from 'pages/admin/school/list';
+import AdminSchoolEdit     from 'pages/admin/school/edit';
+import AdminUserList       from 'pages/admin/user/list';
+import AdminOffenderList   from 'pages/admin/offender/list';
+import AdminOffenderImport from 'pages/admin/offender/import';
+import AdminMigration      from 'pages/admin/migration';
 
 const routeGenerator = () => [
   {
@@ -92,11 +97,41 @@ const routeGenerator = () => [
     component: SchoolSetting
   },
   {
-    path: '/admin/backup',
-    roles: ['ROLE_SCOPE_PLATEVERIFY', 'ROLE_MANAGE_ALL'],
-    pageTitle: 'Backup',
-    component: AdminBackup
-  }  
+    path: '/admin/school',
+    roles: ['ROLE_SCOPE_PLATEVERIFY'],
+    pageTitle: 'Schools',
+    component: AdminSchoolList
+  },
+  {
+    path: '/admin/school/:id',
+    roles: ['ROLE_SCOPE_PLATEVERIFY'],
+    pageTitle: 'Edit School',
+    component: AdminSchoolEdit
+  },
+  {
+    path: '/admin/user',
+    roles: ['ROLE_SCOPE_PLATEVERIFY'],
+    pageTitle: 'Users',
+    component: AdminUserList
+  },
+  {
+    path: '/admin/offender',
+    roles: ['ROLE_SCOPE_PLATEVERIFY'],
+    pageTitle: 'Offenders',
+    component: AdminOffenderList
+  },
+  {
+    path: '/admin/offender/import',
+    roles: ['ROLE_SCOPE_PLATEVERIFY'],
+    pageTitle: 'Offenders',
+    component: AdminOffenderImport
+  },
+  {
+    path: '/admin/migration',
+    roles: ['ROLE_SCOPE_PLATEVERIFY'],
+    pageTitle: 'Migration',
+    component: AdminMigration
+  }
 ];
 
 const builder = (user) => {

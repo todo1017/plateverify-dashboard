@@ -28,7 +28,7 @@ const App = () => {
         if (user.school) {
           document.body.classList.add('dark-indigo');
         } else {
-          document.body.classList.add('dark-green');
+          document.body.classList.add('dark-deep-purple');
         }
       }
       setAuth({ init: true, user, routes });

@@ -65,9 +65,9 @@ const Sidebar = () => {
               <div className={classes.protect}>Protected By Plateverify</div>
             </div> :
             <div className={classes.logoWrap}>
-              {/* <img className={classes.logo} src="/logo.png" alt=""/> */}
+              <img className={classes.logo} src="/logo2.png" alt=""/>
               <div className={classes.schoolName}>
-                Plateverify Management
+                PLATEVERIFY
               </div>
             </div>
           }

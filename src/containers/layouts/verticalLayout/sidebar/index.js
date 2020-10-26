@@ -12,7 +12,9 @@ import Navigation from "./Navigation";
 const useStyles = makeStyles({
   logoWrap: {
     textAlign: 'center',
-    margin: 16
+    margin: 16,
+    paddingBottom: 32,
+    borderBottom: 'solid 1px #343434'
   },
   logo: {
     width: 72

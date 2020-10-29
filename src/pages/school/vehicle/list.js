@@ -1,134 +1,109 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilValue, useRecoilCallback } from "recoil";
+import vehiclesAtom from "atoms/school/vehicles";
+import { initAction, paginateAction } from "actions/school/vehicles";
 import { makeStyles } from "@material-ui/core/styles";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Paper, Button } from "@material-ui/core";
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import PageHead from "components/_custom/pageHead";
-import StatusBox from "components/_custom/statusBox";
-import api from "containers/api";
-import vehicleListAtom from "atoms/vehicleList";
-import { useEffectOnlyOnce } from "util/custom";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, IconButton } from "@material-ui/core";
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import PageImportLink from "components/PageImportLink";
+import DataBox from "components/DataBox";
+
+const useEffectOnce = func => useEffect(func, []);
 
 const useStyles = makeStyles({
-  head: {
-    '& .MuiTableCell-head': {
-      color: '#3f51b5 !important'
+  space: {
+    '& > *+*': {
+      marginTop: 16
     }
   },
+  filter: {
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
+    '& > *+*': {
+      marginLeft: 16
+    }
+  },
+  link: {
+    width: 50,
+    padding: 0
+  },
+  upperCase: {
+    textTransform: 'uppercase'
+  }
 });
 
 const VehicleList = () => {
 
   const classes = useStyles();
-  const [vehicleList, setVehicleList] = useRecoilState(vehicleListAtom);
+  const vehiclesState = useRecoilValue(vehiclesAtom);
+  const vehiclesInit = useRecoilCallback(initAction);
+  const vehiclesPaginate = useRecoilCallback(paginateAction);
 
-  const search = async payload => {
-    setVehicleList({
-      ...vehicleList,
-      isLoading: true
-    });
-    const response = await api.post('/vehicle/list', payload);
-    if (response) {
-      setVehicleList({
-        ...vehicleList,
-        isLoading: false,
-        init: true,
-        items: response.data.items,
-        pagination: response.data.meta
-      });
-    } else {
-      setVehicleList({
-        ...vehicleList,
-        isLoading: false
-      });
-    }
-  };
-
-  useEffectOnlyOnce(() => {
-    if (!vehicleList.init) {
-      search({
-        init: true,
-        page: 1,
-        limit: 10
-      });
-    }
+  useEffectOnce(() => {
+    vehiclesInit();
   });
 
-  const handleChangePage = (e, page) => {
-    search({
-      page: page + 1,
-      limit: 10
-    });
-  };
+  const handleChangePage = (e, page) => vehiclesPaginate(page+1);
 
   return (
-    <div className="app-wrapper">
-      <div className="dashboard animated slideInUpTiny animation-duration-3">
-        <PageHead>
-          <Link to="/vehicle/import">
-            <Button
-              color="primary"
-              variant="contained"
-              startIcon={<CloudUploadIcon />}
-            >
-              Import
-            </Button>
-          </Link>
-        </PageHead>
-        <Paper>
-          <StatusBox
-            height={200}
-            type="circle"
-            status={vehicleList.isLoading ? 'wait' : vehicleList.items.length === 0 ? 'empty' : ''}
-          >
-            <TableContainer>
-              <Table>
-                <TableHead className={classes.head}>
-                  <TableRow>
-                    <TableCell>Plate</TableCell>
-                    <TableCell>Make</TableCell>
-                    <TableCell>Model</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Color</TableCell>
-                    <TableCell>View</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {vehicleList.items.map(vehicle =>
-                    <TableRow key={vehicle.id}>
-                      <TableCell>
-                        <span className="text-uppercase">
-                          {vehicle.plate}
-                        </span>
-                      </TableCell>
-                      <TableCell>{vehicle.make}</TableCell>
-                      <TableCell>{vehicle.model}</TableCell>
-                      <TableCell>{vehicle.body}</TableCell>
-                      <TableCell>{vehicle.color}</TableCell>
-                      <TableCell width={50}>
-                        <Link to={`/vehicle/view/${vehicle.id}`}>
-                          <Button variant="outlined" >
-                            View
-                          </Button>
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-              <TablePagination
-                component="div"
-                count={vehicleList.pagination.totalItems}
-                rowsPerPage={10}
-                rowsPerPageOptions={[10]}
-                page={vehicleList.pagination.currentPage-1}
-                onChangePage={handleChangePage}
-              />
-            </TableContainer>
-          </StatusBox>
-        </Paper>
-      </div>
+    <div className={classes.space}>
+      <PageImportLink to="/vehicle/import">
+        Import
+      </PageImportLink>
+      <DataBox
+        height={100}
+        loading={vehiclesState.isLoading}
+        empty={vehiclesState.items.length === 0}
+      >
+        <div className={classes.filter}>
+          <TablePagination
+            component="div"
+            count={vehiclesState.pagination.totalItems}
+            rowsPerPage={10}
+            rowsPerPageOptions={[10]}
+            page={vehiclesState.pagination.currentPage-1}
+            onChangePage={handleChangePage}
+          />
+        </div>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Plate</TableCell>
+                <TableCell>Make</TableCell>
+                <TableCell>Model</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>Color</TableCell>
+                <TableCell>View</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {vehiclesState.items.map(vehicle =>
+                <TableRow key={vehicle.id}>
+                  <TableCell>
+                    <span className={classes.upperCase}>
+                      {vehicle.plate}
+                    </span>
+                  </TableCell>
+                  <TableCell>{vehicle.make}</TableCell>
+                  <TableCell>{vehicle.model}</TableCell>
+                  <TableCell>{vehicle.body}</TableCell>
+                  <TableCell>{vehicle.color}</TableCell>
+                  <TableCell className={classes.link}>
+                    <Link to={`/vehicle/view/${vehicle.id}`}>
+                      <IconButton color="primary">
+                        <ArrowForwardIcon size="small" />
+                      </IconButton>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </DataBox>
     </div>
   );
 };

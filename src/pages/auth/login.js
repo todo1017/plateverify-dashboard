@@ -4,11 +4,11 @@ import { useForm, Controller } from "react-hook-form";
 import { Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import authState from "atoms/auth";
-import api from "containers/api";
+import api from "api";
 
 const useStyles = makeStyles(theme  => ({
   root: {
-    width: '100%',
+    width: '100vw',
     minHeight: '100vh',
     height: '100vh',
     display: 'flex',
@@ -33,10 +33,13 @@ const useStyles = makeStyles(theme  => ({
   block: {
     maxWidth: 400,
     height: '100%',
-    padding: '70px 50px',
+    padding: 30,
     overflowY: 'auto',
     backgroundColor: '#ffffff',
     zIndex: 10,
+  },
+  main: {
+    padding: '70px 50px',
   },
   topSection: {
     marginBottom: 50,
@@ -48,10 +51,6 @@ const useStyles = makeStyles(theme  => ({
   title: {
     fontSize: 24,
     marginTop: 24,
-  },
-  company: {
-    fontSize: 18,
-    color: '#888'
   },
   space: {
     '& > *+*' : {
@@ -68,6 +67,7 @@ const Login = () => {
   const classes = useStyles();
   const [auth, setAuth] = useRecoilState(authState);
   const { control, handleSubmit, errors } = useForm();
+  
   const onSubmit = async data => {
     setAuth({ ...auth, loginChecking: true });
     const response = await api.post('/auth/login', data);

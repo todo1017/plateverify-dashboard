@@ -1,69 +1,35 @@
-import React from "react";
-import { useRecoilState } from "recoil";
-import { Paper, List, ListItem, ListItemText, Divider } from "@material-ui/core";
-import settingAtom from "atoms/settingAtom";
-import api from "containers/api";
-import StatusBox from "components/_custom/statusBox";
-import { useEffectOnlyOnce } from "util/custom";
-import AlertBox from "./alertBox";
+import React, { useEffect } from "react";
+import { useRecoilValue, useRecoilCallback } from "recoil";
+import settingAtom from "atoms/school/setting";
+import { initAction } from "actions/school/setting";
+import { Accordian, AccordianItem, AccordianHead, AccordianBody } from "components/Accordian";
+import DataBox from "components/DataBox";
+import AlertSetting from "./alertSetting";
+
+const useEffectOnce = func => useEffect(func, []);
 
 const Setting = () => {
 
-  const [setting, setSetting] = useRecoilState(settingAtom);
+  const settingState = useRecoilValue(settingAtom);
+  const settingInit = useRecoilCallback(initAction);
 
-  useEffectOnlyOnce(() => {
-    if (!setting.init) {
-      const load = async () => {
-        setSetting({
-          ...setting,
-          isLoading: true
-        });
-        const response = await api.post('/setting/all');
-        if (response) {
-          setSetting({
-            ...setting,
-            init: true,
-            isLoading: false,
-            alert: response.data.filter(item => item.category === 'alert')[0] || null
-          });
-        } else {
-          setSetting({
-            ...setting,
-            isLoading: false
-          });
-        }
-      };
-      load();
-    }
+  useEffectOnce(() => {
+    settingInit();
   });
 
   return (
-    <div className="app-wrapper">
-      <div className="dashboard animated slideInUpTiny animation-duration-3">
-        <StatusBox
-          height={300}
-          padding={0}
-          type="circle"
-          status={!setting.init || setting.isLoading? 'wait' : ''}
-        >
-          <Paper>
-            <List>
-              <ListItem>
-                <ListItemText>
-                  Alert Recipients
-                </ListItemText>
-              </ListItem>
-              <Divider />
-              <ListItem>
-                <ListItemText>
-                  <AlertBox />
-                </ListItemText>
-              </ListItem>
-            </List>
-          </Paper>
-        </StatusBox>
-      </div>
-    </div>
+    <DataBox height={100} loading={settingState.isLoading}>
+      <Accordian>
+        <AccordianItem>
+          <AccordianHead>
+            Alert Recipients
+          </AccordianHead>
+          <AccordianBody>
+            <AlertSetting />
+          </AccordianBody>
+        </AccordianItem>
+      </Accordian>
+    </DataBox>
   );
 };
 

@@ -1,6 +1,6 @@
 import { takeEvery, fork, put, all, call } from 'redux-saga/effects';
 import actions from './actions';
-import api from 'containers/api';
+import api from 'api';
 
 const {
   SEARCH_REQUEST,

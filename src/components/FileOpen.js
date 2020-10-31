@@ -4,17 +4,17 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   root: {
-    background: '#3f51b5',
+    background: '#616161',
     color: 'white',
     borderRadius: 4,
-    padding: '6px 12px',
+    padding: '8px 12px',
     '& > input' : {
       display: 'none'
     }
   }
 });
 
-const FileOpen = ({ onSelect }) => {
+const FileOpen = ({ onSelect, children, ...props }) => {
 
   const classes = useStyles();
 
@@ -23,8 +23,8 @@ const FileOpen = ({ onSelect }) => {
   };
 
   return (
-    <ButtonBase className={classes.root} component="label">
-      Open File
+    <ButtonBase className={classes.root} component="label" {...props}>
+      {children || 'Open File'}
       <input type="file" onChange={handleChange}/>
     </ButtonBase>
   );

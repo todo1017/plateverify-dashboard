@@ -1,12 +1,12 @@
-import indigo from '@material-ui/core/colors/indigo';
+import deepPurple from '@material-ui/core/colors/deepPurple';
 import pink from '@material-ui/core/colors/pink';
 
 export default {
   palette: {
     primary: {
-      light: indigo[300],
-      main: indigo[500],
-      dark: indigo[700],
+      light: deepPurple[300],
+      main: deepPurple[500],
+      dark: deepPurple[700],
       contrastText: '#fff'
     },
     secondary: {

@@ -1,4 +1,6 @@
 import React from "react";
+import { useRecoilValue } from "recoil";
+import pageAtom from "atoms/page";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppBar, Toolbar } from "@material-ui/core";
 import BtnLogout from "./BtnLogout";
@@ -51,16 +53,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Header = ({ title }) => {
+const Header = () => {
   
   const classes = useStyles();
+  const pageState = useRecoilValue(pageAtom);
 
   return (
     <AppBar className={classes.appMainHeader}>
       <Toolbar className={classes.appToolbar} disableGutters={false}>
         <BtnToggleNav />
         <div className={classes.title}>
-          {title}
+          {pageState.title}
         </div>
         <div className={classes.grow} />
         <BtnLogout />

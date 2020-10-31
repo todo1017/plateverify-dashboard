@@ -6,4 +6,6 @@ const Migration = () => {
   );
 };
 
+Migration.title = "Data Migration";
+
 export default Migration;

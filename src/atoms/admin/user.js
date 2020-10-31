@@ -1,7 +1,7 @@
 import { atom } from "recoil";
 
-const schoolAtom = atom({
-  key: 'adminSchoolState',
+const userAtom = atom({
+  key: 'adminUserState',
   default: {
     init: false,
     isLoading: false,
@@ -9,4 +9,4 @@ const schoolAtom = atom({
   }
 });
 
-export default schoolAtom;
+export default userAtom;

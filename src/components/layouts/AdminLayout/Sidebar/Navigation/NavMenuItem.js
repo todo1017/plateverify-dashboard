@@ -22,11 +22,11 @@ const useStyles = makeStyles({
     borderBottomRightRadius: '1.875rem',
     marginRight: 20,
     '&:hover': {
-      backgroundColor: '#3f51b5',
+      backgroundColor: '#673ab7',
       color: '#fff !important'
     },
     '&.active': {
-      backgroundColor: '#3f51b5',
+      backgroundColor: '#673ab7',
       color: '#fff !important'
     }
   }

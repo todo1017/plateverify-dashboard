@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useRecoilValue, useRecoilCallback } from "recoil";
 import offenderAtom from "atoms/admin/offender";
 import { initAction, paginateAction } from "actions/admin/offender";

@@ -39,7 +39,7 @@
     "match-sorter": "^4.0.2",
     "moment": "^2.24.0",
     "namor": "^2.0.2",
-    "node-sass": "^4.13.0",
+    "node-sass": "^5.0.0",
     "nprogress": "^0.2.0",
     "path": "^0.12.7",
     "prettier": "^1.19.1",

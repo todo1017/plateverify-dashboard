@@ -90,14 +90,14 @@ const Alert = () => {
                     <ListItemText>
                       <Button
                         startIcon={item.offender ? <CheckIcon /> : <BlockIcon />}
-                        color={item.offender ? 'primary' : ''}
+                        color={item.offender ? 'primary' : 'default'}
                         onClick={() => toggleOption(index, 'offender', !item.offender)}
                       >
                         Perimeter Defender
                       </Button>
                       <Button
                         startIcon={item.flagged ? <CheckIcon /> :  <BlockIcon />}
-                        color={item.flagged ? 'primary' : ''}
+                        color={item.flagged ? 'primary' : 'default'}
                         onClick={() => toggleOption(index, 'flagged', !item.flagged)}
                       >
                         Flagged Vehicle

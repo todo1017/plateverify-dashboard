@@ -14,6 +14,9 @@ const useStyles = makeStyles({
       color: '#3f51b5 !important'
     }
   },
+  uppercase: {
+    textTransform: 'uppercase'
+  }
 });
 
 const OffenderList = () => {
@@ -56,7 +59,7 @@ const OffenderList = () => {
             {offendersState.items.map(offender =>
               <TableRow key={offender.id}>
                 <TableCell>
-                  <span className="text-uppercase">
+                  <span className={classes.uppercase}>
                     {offender.plate}
                   </span>
                 </TableCell>

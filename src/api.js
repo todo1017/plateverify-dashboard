@@ -2,7 +2,7 @@ import axios from 'axios';
 
 axios.defaults.withCredentials = true;
 // const baseURL = 'https://api.ejsdevelopment.com/';
-const baseURL = 'http://localhost:8002/';
+const baseURL = process.env.REACT_APP_SERVER;
 const token = localStorage.getItem('token') || ''
 
 const api = axios.create({

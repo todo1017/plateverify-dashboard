@@ -4,7 +4,7 @@ import settingAtom from "atoms/school/setting";
 import { initAction } from "actions/school/setting";
 import { Accordian, AccordianItem, AccordianHead, AccordianBody } from "components/Accordian";
 import DataBox from "components/DataBox";
-import AlertSetting from "./alertSetting";
+import AlertSetting from "components/school/AlertSetting";
 
 const useEffectOnce = func => useEffect(func, []);
 

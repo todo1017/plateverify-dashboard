@@ -5,7 +5,7 @@ import AdminUserList       from 'pages/admin/user/list';
 import AdminUserCreate     from 'pages/admin/user/create';
 import AdminOffenderList   from 'pages/admin/offender/list';
 import AdminOffenderImport from 'pages/admin/offender/import';
-import AdminMigration      from 'pages/admin/migration';
+import AdminMigration      from 'pages/admin/migration/migration';
 
 const routeGenerator = () => [
   {

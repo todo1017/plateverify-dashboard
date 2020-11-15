@@ -47,7 +47,7 @@ const UserCreate = () => {
       email,
       password,
       roles: employ === 'admin' ? [adminScope] : [schoolScope],
-      school: employ === 'admin' ? null : employ
+      schoolId: employ === 'admin' ? null : employ
     });
     if (response) {
       addUser(response.data);

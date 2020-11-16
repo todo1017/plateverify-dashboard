@@ -113,17 +113,19 @@ const UserList = () => {
                   {user.schoolId ? getSchoolName(schoolState.data, user.schoolId) : 'ADMIN'}
                 </TableCell> */}
                 <TableCell style={{width:30}}>
-                  <IconButton
-                    color={user.active ? 'primary' : 'default'}
-                    onClick={() => toggleUserActive(user)}
-                    disabled={isLoading}
-                  >
-                    {user.active?
-                      <CheckBoxIcon />
-                      :
-                      <CheckBoxOutlineBlankIcon />
-                    }
-                  </IconButton>
+                  {user.email !== 'admin@plateverify.com' &&
+                    <IconButton
+                      color={user.active ? 'primary' : 'default'}
+                      onClick={() => toggleUserActive(user)}
+                      disabled={isLoading}
+                    >
+                      {user.active?
+                        <CheckBoxIcon />
+                        :
+                        <CheckBoxOutlineBlankIcon />
+                      }
+                    </IconButton>
+                  }
                 </TableCell>
               </TableRow>
             ))}

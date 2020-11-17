@@ -101,7 +101,7 @@
     "yup": "^0.29.3"
   },
   "scripts": {
-    "start": "set PORT=5002 react-scripts start",
+    "start": "set PORT=5002 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

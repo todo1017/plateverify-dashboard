@@ -10,22 +10,23 @@ const Migration = () => {
   const [status, setStatus] = useState({});
   const [seek, setSeek] = useState(-1);
 
+  const getStatus = async () => {
+    const response = await api.post('/data-migration/get_status');
+    if (response) {
+      let initStatus = {};
+      let initSeek = -1;
+      response.data.forEach((d, i) => {
+        if (d.value === 'done') {
+          initSeek = i;
+        }
+        initStatus[d.key] = d.value;
+      });
+      setStatus(initStatus);
+      setSeek(initSeek);
+    }
+  };
+
   useEffectOnce(() => {
-    const getStatus = async () => {
-      const response = await api.post('/data-migration/get_status');
-      if (response) {
-        let initStatus = {};
-        let initSeek = -1;
-        response.data.forEach((d, i) => {
-          if (d.value === 'done') {
-            initSeek = i;
-          }
-          initStatus[d.key] = d.value;
-        });
-        setStatus(initStatus);
-        setSeek(initSeek);
-      }
-    };
     getStatus();
     const interval = setInterval(() => {
       getStatus();
@@ -40,10 +41,7 @@ const Migration = () => {
     data.append('file', file);
     const response = await api.post('/data-migration/run_migrate', data);
     if (response) {
-      setStatus({
-        ...status,
-        [step]: 'running'
-      });
+      await getStatus();
     }
     setIsLoading(false);
   };

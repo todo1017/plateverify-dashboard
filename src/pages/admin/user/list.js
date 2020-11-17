@@ -64,7 +64,7 @@ const UserList = () => {
 
   const removeUser = async (user) => {
     var r = window.confirm("Press a button!");
-    if (r == true) {
+    if (r === true) {
       setIsLoading(true);
       const response = await api.post('/user/remove', user);
       if (response) {

@@ -38,6 +38,16 @@ export const addAction =  ({snapshot, set}) => async (user) => {
   }
 };
 
+export const removeAction =  ({snapshot, set}) => async (user) => {
+  const state = await snapshot.getPromise(atom);
+  if (state.init && !state.isLoading) {
+    set(atom, {
+      ...state,
+      data: state.data.filter(d => d.id !== user.id)
+    });
+  }
+};
+
 export const updateUserAction =  ({snapshot, set}) => async (user) => {
   const state = await snapshot.getPromise(atom);
   if (state.init && !state.isLoading) {

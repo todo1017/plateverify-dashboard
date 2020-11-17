@@ -3,12 +3,13 @@ import { useRecoilValue, useRecoilCallback } from "recoil";
 import schoolAtom from "atoms/admin/school";
 import { initAction as initSchoolAction } from "actions/admin/school";
 import userAtom from "atoms/admin/user";
-import { initAction, updateUserAction } from "actions/admin/user";
+import { initAction, removeAction, updateUserAction } from "actions/admin/user";
 import api from "api";
 import { Table, TableBody, TableCell, TableRow, IconButton, TextField, MenuItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CloseIcon from '@material-ui/icons/Close';
 import DataBox from "components/DataBox";
 import PageAddLink from "components/PageAddLink";
 
@@ -28,11 +29,6 @@ const useStyles = makeStyles({
 
 const useEffectOnce = func => useEffect(func, []);
 
-// const getSchoolName = (schools, id) => {
-//   const school = schools.filter(s => s.id === id)[0];
-//   return school ? school.name : '';
-// };
-
 const UserList = () => {
 
   const classes = useStyles();
@@ -42,6 +38,7 @@ const UserList = () => {
   const userState = useRecoilValue(userAtom);
   const userInit = useRecoilCallback(initAction);
   const userUpdate = useRecoilCallback(updateUserAction);
+  const userRemove = useRecoilCallback(removeAction);
 
   const [isLoading, setIsLoading] = useState(false);
   const [schoolId, setSchoolId] = useState('admin');
@@ -63,6 +60,18 @@ const UserList = () => {
       userUpdate(data);
     }
     setIsLoading(false);
+  };
+
+  const removeUser = async (user) => {
+    var r = window.confirm("Press a button!");
+    if (r == true) {
+      setIsLoading(true);
+      const response = await api.post('/user/remove', user);
+      if (response) {
+        userRemove(user);
+      }
+      setIsLoading(false);
+    }
   };
 
   const handleSchoolSelect = (e) => {
@@ -107,11 +116,6 @@ const UserList = () => {
           <TableBody>
             {users.map(user => (
               <TableRow key={user.id}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                {/* <TableCell>
-                  {user.schoolId ? getSchoolName(schoolState.data, user.schoolId) : 'ADMIN'}
-                </TableCell> */}
                 <TableCell style={{width:30}}>
                   {user.email !== 'admin@plateverify.com' &&
                     <IconButton
@@ -124,6 +128,15 @@ const UserList = () => {
                         :
                         <CheckBoxOutlineBlankIcon />
                       }
+                    </IconButton>
+                  }
+                </TableCell>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell style={{width:30}}>
+                  {user.email !== 'admin@plateverify.com' &&
+                    <IconButton onClick={() => removeUser(user)} disabled={isLoading}>
+                      <CloseIcon />
                     </IconButton>
                   }
                 </TableCell>

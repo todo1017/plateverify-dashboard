@@ -57,7 +57,7 @@ const DashboardRecord = () => {
           <Grid item xs={6}>
             <Paper>
               <DataBox height={100} loading={isLoading} empty={!record}>
-                {record && <FlagHistory record={record} />}
+                {record && <FlagHistory vehicleOrigin={record.vehicle} />}
               </DataBox>
             </Paper>
           </Grid>

@@ -51,7 +51,7 @@ const useStyles = makeStyles({
   }
 });
 
-const FlagHistory = ({ record, noHead }) => {
+const FlagHistory = ({ vehicleOrigin, noHead }) => {
   
   const classes = useStyles();
   const { control, handleSubmit, errors } = useForm();
@@ -60,8 +60,8 @@ const FlagHistory = ({ record, noHead }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setVehicle(record.vehicle);
-  }, [record]);
+    setVehicle(vehicleOrigin);
+  }, [vehicleOrigin]);
 
   const onSubmit = async data => {
     if (!isLoading) {

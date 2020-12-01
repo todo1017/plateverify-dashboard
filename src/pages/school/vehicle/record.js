@@ -120,7 +120,7 @@ const VehicleRecord = () => {
               Flag History
             </AccordianHead>
             <AccordianBody>
-              {vehicle && <FlagHistory record={vehicle} noHead />}
+              {vehicle && <FlagHistory vehicleOrigin={vehicle} />}
             </AccordianBody>
           </AccordianItem>
         </Accordian>
